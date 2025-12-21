@@ -32,7 +32,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="border-t mt-20 bg-cream-dark"
+      className="border-t mt-3 bg-cream-dark"
       style={{ borderColor: "#d6e2e2" }}
     >
       <div className="container mx-auto px-4 py-12">
