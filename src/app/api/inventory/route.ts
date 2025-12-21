@@ -1,20 +1,22 @@
-import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
       .from("product_variants")
-      .select(`
+      .select(
+        `
         *,
         product_groups(
           *,
           brands(name),
           product_types(name)
         ),
-        product_images(url, alt_text, sort_order),
+        product_images(alt_text, sort_order, url_cloudinary),
         inventory_current(quantity)
-      `)
+      `,
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -24,8 +26,8 @@ export async function GET() {
     return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }

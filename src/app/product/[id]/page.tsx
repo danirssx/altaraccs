@@ -6,6 +6,9 @@ import Image from "next/image";
 import { getProductVariant } from "@/lib/api/inventory";
 import Link from "next/link";
 import { use } from "react";
+import { useCartStore } from "@/store/cartStore";
+import { toast } from "sonner";
+import { formatPrice } from "@/utils/formatters";
 
 export default function ProductDetailPage({
   params,
@@ -17,6 +20,9 @@ export default function ProductDetailPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+
+  const { addItem, openCart } = useCartStore();
 
   useEffect(() => {
     loadProduct();
@@ -40,14 +46,49 @@ export default function ProductDetailPage({
     }
   };
 
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    const primaryImage =
+      product.product_images && product.product_images.length > 0
+        ? (product.product_images[0].url_cloudinary || "")
+        : "";
+
+    const price = product.sale_price || product.price;
+
+    addItem({
+      productId: product.id,
+      productName: product.product_groups?.name || `Product ${product.code}`,
+      productCode: product.code,
+      price: price,
+      quantity: quantity,
+      imageUrl: primaryImage,
+      size: product.size || undefined,
+      color: product.color || undefined,
+    });
+
+    toast.success("Added to cart!", {
+      description: `${quantity} ${quantity === 1 ? "item" : "items"} added to your cart`,
+    });
+
+    // Open cart drawer
+    openCart();
+
+    // Reset quantity
+    setQuantity(1);
+  };
+
   if (loading) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#fffff5" }}
-      >
-        <div className="text-center" style={{ color: "#172e3c" }}>
-          <div className="text-xl font-light">Loading...</div>
+      <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div
+            className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 mb-4"
+            style={{ borderColor: "#172e3c" }}
+          ></div>
+          <p className="text-xl font-light" style={{ color: "#172e3c" }}>
+            Loading...
+          </p>
         </div>
       </div>
     );
@@ -55,59 +96,44 @@ export default function ProductDetailPage({
 
   if (error || !product) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#fffff5" }}
-      >
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error || "Product not found"}</p>
-          <Link
-            href="/showroom"
-            className="px-6 py-2 transition-colors"
-            style={{
-              backgroundColor: "#172e3c",
-              color: "#fffff5",
-            }}
-          >
-            Back to Products
-          </Link>
-        </div>
+      <div className="container mx-auto px-4 py-16 text-center min-h-[60vh] flex flex-col items-center justify-center">
+        <p className="text-red-600 mb-4">{error || "Product not found"}</p>
+        <Link
+          href="/"
+          className="px-6 py-3 text-sm tracking-widest transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: "#172e3c",
+            color: "#fffff5",
+          }}
+        >
+          BACK TO PRODUCTS
+        </Link>
       </div>
     );
   }
 
   const images = product.product_images || [];
   const selectedImage = images[selectedImageIndex];
+  const displayPrice = product.sale_price || product.price;
+  const hasDiscount = product.sale_price && product.sale_price < product.price;
+  const inStock =
+    product.inventory_current && product.inventory_current.quantity > 0;
+  const availableStock = product.inventory_current?.quantity || 0;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#fffff5" }}>
-      {/* Header */}
-      <header className="border-b" style={{ borderColor: "#d6e2e2" }}>
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <Link href="/showroom">
-              <button
-                className="text-sm tracking-wider"
-                style={{ color: "#172e3c" }}
-              >
-                ← BACK
-              </button>
-            </Link>
-            <Image
-              src="/logos/Altara.png"
-              alt="Altara"
-              width={150}
-              height={50}
-              priority
-              className="object-contain"
-            />
-            <div className="w-16"></div>
-          </div>
+    <div className="py-12">
+      <div className="container mx-auto px-4">
+        {/* Breadcrumb */}
+        <div className="mb-8">
+          <Link
+            href="/"
+            className="text-sm font-light hover:opacity-70 transition-opacity"
+            style={{ color: "#172e3c" }}
+          >
+            ← Back to Collection
+          </Link>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
           {/* Left Column - Images */}
           <div>
@@ -170,11 +196,19 @@ export default function ProductDetailPage({
             {/* Price */}
             <div className="mb-6">
               <div className="flex items-center gap-3">
+                {hasDiscount && (
+                  <span
+                    className="text-xl font-light line-through"
+                    style={{ color: "#172e3c", opacity: 0.5 }}
+                  >
+                    {formatPrice(product.price)}
+                  </span>
+                )}
                 <span
                   className="text-2xl font-light"
                   style={{ color: "#dbb58e" }}
                 >
-                  ${product.price}
+                  {formatPrice(displayPrice)}
                 </span>
               </div>
             </div>
@@ -265,71 +299,83 @@ export default function ProductDetailPage({
                   </div>
                 )}
 
-                {product.inventory_current && (
-                  <div className="flex justify-between">
-                    <span
-                      className="font-light"
-                      style={{ color: "#172e3c", opacity: 0.7 }}
-                    >
-                      Availability:
-                    </span>
-                    <span
-                      className="font-light"
-                      style={{
-                        color:
-                          product.inventory_current.quantity > 0
-                            ? "#4ade80"
-                            : "#ef4444",
-                      }}
-                    >
-                      {product.inventory_current.quantity > 0
-                        ? "In Stock"
-                        : "Out of Stock"}
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span
+                    className="font-light"
+                    style={{ color: "#172e3c", opacity: 0.7 }}
+                  >
+                    Availability:
+                  </span>
+                  <span
+                    className="font-light"
+                    style={{
+                      color: inStock ? "#4ade80" : "#ef4444",
+                    }}
+                  >
+                    {inStock
+                      ? `In Stock (${availableStock} available)`
+                      : "Out of Stock"}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Contact Button */}
-            <div className="mb-8">
+            {/* Quantity Selector */}
+            {inStock && (
+              <div className="mb-6">
+                <label
+                  className="block text-sm font-light mb-2"
+                  style={{ color: "#172e3c" }}
+                >
+                  Quantity
+                </label>
+                <div
+                  className="flex items-center gap-3 border w-fit"
+                  style={{ borderColor: "#d6e2e2" }}
+                >
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                    style={{ color: "#172e3c" }}
+                  >
+                    −
+                  </button>
+                  <span
+                    className="text-base font-light px-4"
+                    style={{ color: "#172e3c" }}
+                  >
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setQuantity(Math.min(availableStock, quantity + 1))
+                    }
+                    className="px-4 py-3 hover:bg-gray-100 transition-colors"
+                    style={{ color: "#172e3c" }}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Add to Cart Button */}
+            <div className="mb-4">
               <button
-                className="w-full py-4 text-sm tracking-widest transition-all hover:opacity-90"
+                onClick={handleAddToCart}
+                disabled={!inStock}
+                className="w-full py-4 text-sm tracking-widest transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: "#172e3c",
                   color: "#fffff5",
                 }}
               >
-                CONTACTAR POR WHATSAPP
+                {inStock ? "ADD TO CART" : "OUT OF STOCK"}
               </button>
             </div>
           </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer
-        className="border-t mt-20"
-        style={{
-          borderColor: "#d6e2e2",
-          backgroundColor: "#f7f1e3",
-        }}
-      >
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col items-center">
-            <Image
-              src="/logos/Altara.png"
-              alt="Altara"
-              width={150}
-              height={50}
-              className="object-contain mb-6"
-            />
-            <p className="text-sm font-light" style={{ color: "#172e3c" }}>
-              © {new Date().getFullYear()} Altara. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

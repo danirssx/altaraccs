@@ -20,14 +20,41 @@ export default function ShowroomPage() {
       setLoading(true);
       const productsData = await getProductVariants();
 
-      // Filter products with images and available stock
-      const availableProducts = productsData.filter(
-        (product) =>
-          product.product_images &&
-          product.product_images.length > 0 &&
-          product.inventory_current &&
-          product.inventory_current.quantity > 0,
-      );
+      // Filter products with valid images and available stock
+      const availableProducts = productsData.filter((product) => {
+        // Must have product images
+        if (!product.product_images || product.product_images.length === 0) {
+          return false;
+        }
+
+        // Must have valid cloudinary URL
+        const primaryImage = product.product_images[0];
+        if (!primaryImage.url_cloudinary) {
+          return false;
+        }
+
+        // Exclude test/invalid URLs
+        const url = primaryImage.url_cloudinary.toLowerCase();
+        if (
+          url.includes("test-cloudinary-url.com") ||
+          url.includes("example.com") ||
+          url.includes("localhost")
+        ) {
+          return false;
+        }
+
+        // Must have valid cloudinary domain
+        if (!url.includes("cloudinary.com")) {
+          return false;
+        }
+
+        // Must have inventory
+        if (!product.inventory_current || product.inventory_current.quantity <= 0) {
+          return false;
+        }
+
+        return true;
+      });
 
       setProducts(availableProducts);
     } catch (err) {
@@ -107,9 +134,10 @@ export default function ShowroomPage() {
             >
               <div className="relative aspect-square mb-4 overflow-hidden bg-white">
                 {product.product_images &&
-                  product.product_images.length > 0 && (
+                  product.product_images.length > 0 &&
+                  product.product_images[0].url_cloudinary && (
                     <Image
-                      src={product.product_images[0].url}
+                      src={product.product_images[0].url_cloudinary}
                       alt={
                         product.product_images[0].alt_text ||
                         product.product_groups?.name ||
