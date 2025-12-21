@@ -141,7 +141,7 @@ export default function ProductDetailPage({
             <div className="relative aspect-square mb-4 bg-white overflow-hidden">
               {selectedImage && selectedImage.url_cloudinary && (
                 <Image
-                  src={selectedImage.url_cloudinary}
+                  src={selectedImage.url_cloudinary || ""}
                   alt={
                     selectedImage.alt_text ||
                     product.product_groups?.name ||
@@ -158,25 +158,27 @@ export default function ProductDetailPage({
             {/* Thumbnail Images */}
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
-                {images.filter(img => img.url_cloudinary).map((image, index) => (
-                  <button
-                    key={image.id}
-                    onClick={() => setSelectedImageIndex(index)}
-                    className={`relative aspect-square bg-white overflow-hidden border-2 transition-all ${
-                      selectedImageIndex === index
-                        ? "border-[#dbb58e]"
-                        : "border-transparent hover:border-[#d6e2e2]"
-                    }`}
-                  >
-                    <Image
-                      src={image.url_cloudinary}
-                      alt={image.alt_text || `Product image ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="100px"
-                    />
-                  </button>
-                ))}
+                {images
+                  .filter((img) => img.url_cloudinary)
+                  .map((image, index) => (
+                    <button
+                      key={image.id}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={`relative aspect-square bg-white overflow-hidden border-2 transition-all ${
+                        selectedImageIndex === index
+                          ? "border-[#dbb58e]"
+                          : "border-transparent hover:border-[#d6e2e2]"
+                      }`}
+                    >
+                      <Image
+                        src={image.url_cloudinary || ""}
+                        alt={image.alt_text || `Product image ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="100px"
+                      />
+                    </button>
+                  ))}
               </div>
             )}
           </div>

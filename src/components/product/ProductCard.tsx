@@ -26,7 +26,7 @@ export default function ProductCard({
       <div className="relative aspect-square mb-4 overflow-hidden bg-white">
         {primaryImage && primaryImage.url_cloudinary && (
           <Image
-            src={primaryImage.url_cloudinary}
+            src={primaryImage.url_cloudinary || ""}
             alt={
               primaryImage.alt_text || product.product_groups?.name || "Product"
             }

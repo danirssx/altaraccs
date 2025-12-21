@@ -1,25 +1,27 @@
-import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-    
+
     const { data, error } = await supabaseAdmin
       .from("product_variants")
-      .select(`
+      .select(
+        `
         *,
         product_groups(
           *,
           brands(name, description),
           product_types(name)
         ),
-        product_images(url, alt_text, sort_order),
+        product_images(url_cloudinary, alt_text, sort_order),
         inventory_current(quantity, updated_at)
-      `)
+      `,
+      )
       .eq("id", id)
       .single();
 
@@ -28,14 +30,14 @@ export async function GET(
     }
 
     if (!data) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json({ data });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }
