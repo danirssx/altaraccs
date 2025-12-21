@@ -114,11 +114,11 @@ export default function ProductPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          {sortedImages.length > 0 ? (
+          {sortedImages.length > 0 && sortedImages[0].url_cloudinary ? (
             <div className="space-y-4">
               <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
                 <Image
-                  src={sortedImages[0].url}
+                  src={sortedImages[0].url_cloudinary}
                   alt={sortedImages[0].alt_text || `Producto ${product.code}`}
                   fill
                   className="object-cover"
@@ -129,13 +129,13 @@ export default function ProductPage({
 
               {sortedImages.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
-                  {sortedImages.slice(1).map((image, index) => (
+                  {sortedImages.slice(1).filter(img => img.url_cloudinary).map((image, index) => (
                     <div
                       key={index}
                       className="relative aspect-square rounded overflow-hidden bg-gray-100"
                     >
                       <Image
-                        src={image.url}
+                        src={image.url_cloudinary!}
                         alt={
                           image.alt_text ||
                           `Producto ${product.code} - imagen ${index + 2}`
@@ -242,11 +242,10 @@ export default function ProductPage({
                 <h3 className="font-semibold text-gray-800">Disponibilidad</h3>
                 <div className="flex items-center gap-2">
                   <span
-                    className={`px-3 py-1 rounded font-medium ${
-                      product.inventory_current.quantity > 0
+                    className={`px-3 py-1 rounded font-medium ${product.inventory_current.quantity > 0
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
-                    }`}
+                      }`}
                   >
                     {product.inventory_current.quantity > 0
                       ? `${product.inventory_current.quantity} en stock`
@@ -597,7 +596,7 @@ function ImageUploadForm({
     } catch (error) {
       alert(
         "Error subiendo la imagen: " +
-          (error instanceof Error ? error.message : "Error desconocido"),
+        (error instanceof Error ? error.message : "Error desconocido"),
       );
     } finally {
       setUploading(false);
