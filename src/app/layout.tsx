@@ -24,7 +24,8 @@ const playfairDisplay = Playfair_Display({
 
 export const metadata: Metadata = {
   title: "Altara - Fine Jewelry",
-  description: "Discover our exquisite collection of fine jewelry, handcrafted with passion and precision.",
+  description:
+    "Discover our exquisite collection of fine jewelry, with passion and precision.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -41,9 +42,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} antialiased`}
       >
         <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <main className="min-h-screen">{children}</main>
         <Footer />
         <CartDrawer />
         <Toaster position="bottom-right" />

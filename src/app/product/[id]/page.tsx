@@ -94,7 +94,9 @@ export default function ProductDetailPage({
   if (error || !product) {
     return (
       <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-4">
-        <p className="text-red-600 mb-6 text-lg">{error || "Product not found"}</p>
+        <p className="text-red-600 mb-6 text-lg">
+          {error || "Product not found"}
+        </p>
         <Link
           href="/showroom"
           className="px-8 py-4 text-sm tracking-[0.2em] uppercase transition-all hover:opacity-90"
@@ -111,7 +113,8 @@ export default function ProductDetailPage({
 
   const images = product.product_images || [];
   const selectedImage = images[selectedImageIndex];
-  const inStock = product.inventory_current && product.inventory_current.quantity > 0;
+  const inStock =
+    product.inventory_current && product.inventory_current.quantity > 0;
   const availableStock = product.inventory_current?.quantity || 0;
   const name = product.product_groups?.name || `Product ${product.code}`;
   const brand = product.product_groups?.brands?.name;
@@ -121,12 +124,18 @@ export default function ProductDetailPage({
     <div className="min-h-screen bg-cream">
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-6">
-        <nav className="flex items-center gap-2 text-sm font-light" style={{ color: "#172e3c" }}>
+        <nav
+          className="flex items-center gap-2 text-sm font-light"
+          style={{ color: "#172e3c" }}
+        >
           <Link href="/" className="hover:opacity-70 transition-opacity">
             Home
           </Link>
           <span style={{ opacity: 0.5 }}>/</span>
-          <Link href="/showroom" className="hover:opacity-70 transition-opacity">
+          <Link
+            href="/showroom"
+            className="hover:opacity-70 transition-opacity"
+          >
             Showroom
           </Link>
           {category && (
@@ -141,7 +150,6 @@ export default function ProductDetailPage({
       {/* Main Content */}
       <div className="container mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 max-w-7xl mx-auto">
-
           {/* Left Column - Images */}
           <div className="space-y-4">
             {/* Main Image */}
@@ -167,10 +175,11 @@ export default function ProductDetailPage({
                     <button
                       key={image.id ?? `thumb-${index}`}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`relative aspect-square bg-white overflow-hidden transition-all duration-300 ${selectedImageIndex === index
-                        ? "ring-2 ring-[#dbb58e] shadow-md"
-                        : "opacity-70 hover:opacity-100"
-                        }`}
+                      className={`relative aspect-square bg-white overflow-hidden transition-all duration-300 ${
+                        selectedImageIndex === index
+                          ? "ring-2 ring-[#dbb58e] shadow-md"
+                          : "opacity-70 hover:opacity-100"
+                      }`}
                     >
                       <Image
                         src={image.url_cloudinary || ""}
@@ -257,7 +266,10 @@ export default function ProductDetailPage({
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-light" style={{ color: "#172e3c", opacity: 0.6 }}>
+                  <span
+                    className="font-light"
+                    style={{ color: "#172e3c", opacity: 0.6 }}
+                  >
                     Product Code
                   </span>
                   <p className="font-light mt-1" style={{ color: "#172e3c" }}>
@@ -267,7 +279,10 @@ export default function ProductDetailPage({
 
                 {product.size && (
                   <div>
-                    <span className="font-light" style={{ color: "#172e3c", opacity: 0.6 }}>
+                    <span
+                      className="font-light"
+                      style={{ color: "#172e3c", opacity: 0.6 }}
+                    >
                       Size
                     </span>
                     <p className="font-light mt-1" style={{ color: "#172e3c" }}>
@@ -278,7 +293,10 @@ export default function ProductDetailPage({
 
                 {product.color && (
                   <div>
-                    <span className="font-light" style={{ color: "#172e3c", opacity: 0.6 }}>
+                    <span
+                      className="font-light"
+                      style={{ color: "#172e3c", opacity: 0.6 }}
+                    >
                       Color
                     </span>
                     <p className="font-light mt-1" style={{ color: "#172e3c" }}>
@@ -289,7 +307,10 @@ export default function ProductDetailPage({
 
                 {product.composition && (
                   <div className="col-span-2">
-                    <span className="font-light" style={{ color: "#172e3c", opacity: 0.6 }}>
+                    <span
+                      className="font-light"
+                      style={{ color: "#172e3c", opacity: 0.6 }}
+                    >
                       Composition
                     </span>
                     <p className="font-light mt-1" style={{ color: "#172e3c" }}>
@@ -304,13 +325,15 @@ export default function ProductDetailPage({
             <div className="mb-8">
               <div className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${inStock ? 'bg-green-500' : 'bg-red-500'}`}
+                  className={`w-2 h-2 rounded-full ${inStock ? "bg-green-500" : "bg-red-500"}`}
                 />
                 <span
                   className="text-sm font-light"
                   style={{ color: inStock ? "#22c55e" : "#ef4444" }}
                 >
-                  {inStock ? `In Stock (${availableStock} available)` : "Out of Stock"}
+                  {inStock
+                    ? `In Stock (${availableStock} available)`
+                    : "Out of Stock"}
                 </span>
               </div>
             </div>
@@ -342,7 +365,9 @@ export default function ProductDetailPage({
                     {quantity}
                   </span>
                   <button
-                    onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
+                    onClick={() =>
+                      setQuantity(Math.min(availableStock, quantity + 1))
+                    }
                     className="px-5 py-3 hover:bg-gray-50 transition-colors text-lg"
                     style={{ color: "#172e3c" }}
                   >
@@ -364,40 +389,6 @@ export default function ProductDetailPage({
             >
               {inStock ? "Add to Cart" : "Out of Stock"}
             </button>
-
-            {/* Additional Info */}
-            <div className="mt-8 pt-8 border-t" style={{ borderColor: "#d6e2e2" }}>
-              <div className="grid grid-cols-2 gap-6 text-center">
-                <div>
-                  <svg
-                    className="w-6 h-6 mx-auto mb-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ color: "#dbb58e" }}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                  <p className="text-xs font-light" style={{ color: "#172e3c", opacity: 0.7 }}>
-                    Free Shipping
-                  </p>
-                </div>
-                <div>
-                  <svg
-                    className="w-6 h-6 mx-auto mb-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ color: "#dbb58e" }}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  <p className="text-xs font-light" style={{ color: "#172e3c", opacity: 0.7 }}>
-                    Secure Payment
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
