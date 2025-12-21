@@ -17,8 +17,7 @@ export default function ProductCard({
       ? product.product_images[0]
       : null;
 
-  const displayPrice = product.sale_price || product.price;
-  const hasDiscount = product.sale_price && product.sale_price < product.price;
+  const displayPrice = product.price;
 
   return (
     <Link href={`/product/${product.id}`} className="group block">
@@ -34,19 +33,6 @@ export default function ProductCard({
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
           />
-        )}
-
-        {/* Sale Badge */}
-        {hasDiscount && (
-          <div
-            className="absolute top-4 right-4 px-3 py-1 text-xs tracking-wider font-medium"
-            style={{
-              backgroundColor: "#dbb58e",
-              color: "#fffff5",
-            }}
-          >
-            SALE
-          </div>
         )}
 
         {/* Add to Cart Overlay (optional) */}
@@ -80,14 +66,6 @@ export default function ProductCard({
         </h2>
 
         <div className="flex justify-center items-center gap-2">
-          {hasDiscount && (
-            <span
-              className="text-sm font-light line-through"
-              style={{ color: "#172e3c", opacity: 0.5 }}
-            >
-              {formatPrice(product.price)}
-            </span>
-          )}
           <span className="font-light" style={{ color: "#dbb58e" }}>
             {formatPrice(displayPrice)}
           </span>

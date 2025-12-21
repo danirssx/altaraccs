@@ -51,10 +51,10 @@ export default function ProductDetailPage({
 
     const primaryImage =
       product.product_images && product.product_images.length > 0
-        ? (product.product_images[0].url_cloudinary || "")
+        ? product.product_images[0].url_cloudinary || ""
         : "";
 
-    const price = product.sale_price || product.price;
+    const price = product.price;
 
     addItem({
       productId: product.id,
@@ -114,8 +114,7 @@ export default function ProductDetailPage({
 
   const images = product.product_images || [];
   const selectedImage = images[selectedImageIndex];
-  const displayPrice = product.sale_price || product.price;
-  const hasDiscount = product.sale_price && product.sale_price < product.price;
+  const displayPrice = product.price;
   const inStock =
     product.inventory_current && product.inventory_current.quantity > 0;
   const availableStock = product.inventory_current?.quantity || 0;
@@ -198,14 +197,6 @@ export default function ProductDetailPage({
             {/* Price */}
             <div className="mb-6">
               <div className="flex items-center gap-3">
-                {hasDiscount && (
-                  <span
-                    className="text-xl font-light line-through"
-                    style={{ color: "#172e3c", opacity: 0.5 }}
-                  >
-                    {formatPrice(product.price)}
-                  </span>
-                )}
                 <span
                   className="text-2xl font-light"
                   style={{ color: "#dbb58e" }}
