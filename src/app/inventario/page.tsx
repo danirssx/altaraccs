@@ -126,11 +126,6 @@ export default function InventarioPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">
-          Inventario de Productos
-        </h1>
-      </div>
 
       {/* Search and Filter Controls */}
       <div className="mb-6 space-y-4">
@@ -200,9 +195,11 @@ export default function InventarioPage() {
               }
             >
               <div className="mb-4 relative h-48 rounded overflow-hidden bg-gray-100">
-                {product.product_images && product.product_images.length > 0 ? (
+                {product.product_images &&
+                  product.product_images.length > 0 &&
+                  product.product_images[0].url_cloudinary ? (
                   <Image
-                    src={product.product_images[0].url}
+                    src={product.product_images[0].url_cloudinary}
                     alt={
                       product.product_images[0].alt_text ||
                       `Producto ${product.code}`
@@ -285,11 +282,10 @@ export default function InventarioPage() {
               {product.inventory_current && (
                 <div className="text-sm mb-4">
                   <span
-                    className={`px-2 py-1 rounded ${
-                      product.inventory_current.quantity > 0
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
+                    className={`px-2 py-1 rounded ${product.inventory_current.quantity > 0
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                      }`}
                   >
                     Stock: {product.inventory_current.quantity}
                   </span>

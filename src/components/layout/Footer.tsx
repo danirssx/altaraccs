@@ -2,10 +2,26 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ProductType } from '@/types/database';
+import { getProductTypes } from '@/lib/api/inventory';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
+  const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+
+  useEffect(() => {
+    loadProductTypes();
+  }, []);
+
+  const loadProductTypes = async () => {
+    try {
+      const types = await getProductTypes();
+      setProductTypes(types);
+    } catch (error) {
+      console.error('Error loading product types:', error);
+    }
+  };
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,9 +34,9 @@ export default function Footer() {
     <footer className="border-t mt-20 bg-cream-dark" style={{ borderColor: '#d6e2e2' }}>
       <div className="container mx-auto px-4 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {/* Newsletter Section */}
-          <div className="lg:col-span-1">
+          <div>
             <h3 className="text-lg font-light mb-4" style={{ color: '#172e3c' }}>
               Newsletter
             </h3>
@@ -67,7 +83,7 @@ export default function Footer() {
           </div>
 
           {/* Logo & Contact Info */}
-          <div className="lg:col-span-1 flex flex-col">
+          <div className="flex flex-col">
             <Link href="/" className="mb-6">
               <Image
                 src="/logos/Altara.png"
@@ -103,74 +119,29 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Products Column */}
+          {/* Products Column - Dynamic from product types */}
           <div>
             <h3 className="text-lg font-light mb-4" style={{ color: '#172e3c' }}>
               Products
             </h3>
             <ul className="space-y-2">
-              {['Earrings', 'Necklace', 'Bracelet', 'Ring', 'Brooche', "Men's Jewelry"].map((item) => (
-                <li key={item}>
+              <li>
+                <Link
+                  href="/showroom"
+                  className="text-sm font-light hover:opacity-70 transition-opacity"
+                  style={{ color: '#172e3c' }}
+                >
+                  All Products
+                </Link>
+              </li>
+              {productTypes.map((type) => (
+                <li key={type.id}>
                   <Link
-                    href="/"
+                    href={`/showroom?type=${type.id}`}
                     className="text-sm font-light hover:opacity-70 transition-opacity"
                     style={{ color: '#172e3c' }}
                   >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company Column */}
-          <div>
-            <h3 className="text-lg font-light mb-4" style={{ color: '#172e3c' }}>
-              Company
-            </h3>
-            <ul className="space-y-2">
-              {[
-                'About Us',
-                'Testimonials',
-                'Best Seller',
-                'New Arrivals',
-                'Terms & Conditions',
-                'Latest Update',
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="text-sm font-light hover:opacity-70 transition-opacity"
-                    style={{ color: '#172e3c' }}
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Support Column */}
-          <div>
-            <h3 className="text-lg font-light mb-4" style={{ color: '#172e3c' }}>
-              Support
-            </h3>
-            <ul className="space-y-2">
-              {[
-                'Size Charts',
-                'Payment Guide',
-                'Help Centre',
-                'Privacy Policy',
-                'Return Policy',
-                'FAQs',
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="text-sm font-light hover:opacity-70 transition-opacity"
-                    style={{ color: '#172e3c' }}
-                  >
-                    {item}
+                    {type.name}
                   </Link>
                 </li>
               ))}
@@ -183,19 +154,6 @@ export default function Footer() {
           className="pt-6 border-t flex flex-col md:flex-row justify-between items-center gap-4"
           style={{ borderColor: '#d6e2e2' }}
         >
-          <div className="flex gap-4 text-sm font-light" style={{ color: '#172e3c' }}>
-            <Link href="#" className="hover:opacity-70">
-              Privacy Policy
-            </Link>
-            <span>|</span>
-            <Link href="#" className="hover:opacity-70">
-              Terms & Condition
-            </Link>
-            <span>|</span>
-            <Link href="#" className="hover:opacity-70">
-              Sitemap
-            </Link>
-          </div>
           <div className="flex gap-3">
             {['VS', 'MC', 'AP', 'PP'].map((method) => (
               <div

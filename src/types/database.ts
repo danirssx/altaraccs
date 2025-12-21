@@ -33,6 +33,7 @@ export interface ProductVariant {
   original_price?: number
   sale_price?: number
   composition?: string
+  is_featured?: boolean
   created_at?: string
   updated_at?: string
   product_groups?: ProductGroup

@@ -77,35 +77,8 @@ export default function InventarioLayout({ children }: { children: React.ReactNo
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Sistema de Inventario - Joyería</h1>
-          <div className="flex gap-4 items-center">
-            <Link
-              href="/"
-              className="text-sm font-light hover:opacity-70 transition-opacity"
-              style={{ color: '#172e3c' }}
-            >
-              View Store
-            </Link>
-            <button
-              onClick={handleSignOut}
-              className="px-4 py-2 text-sm font-light border hover:bg-gray-100 transition-colors"
-              style={{ borderColor: '#d6e2e2', color: '#172e3c' }}
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </header>
 
       <main className="pb-12">{children}</main>
-
-      <footer className="bg-white border-t mt-auto">
-        <div className="container mx-auto px-4 py-4 text-center text-gray-500 text-sm">
-          © 2024 Sistema de Inventario de Joyería
-        </div>
-      </footer>
     </div>
   );
 }

@@ -8,6 +8,7 @@ export async function GET() {
       .select(
         `
         *,
+        is_featured,
         product_groups(
           *,
           brands(name),

@@ -3,47 +3,58 @@ import { ProductVariant, Brand, ProductType } from '@/types/database';
 export async function getProductVariants(): Promise<ProductVariant[]> {
   const response = await fetch('/api/inventory');
   const result = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(result.error || 'Error fetching products');
   }
-  
+
   return result.data || [];
 }
 
 export async function getProductVariant(id: string): Promise<ProductVariant | null> {
   const response = await fetch(`/api/inventory/${id}`);
   const result = await response.json();
-  
+
   if (!response.ok) {
     if (response.status === 404) {
       return null;
     }
     throw new Error(result.error || 'Error fetching product');
   }
-  
+
   return result.data;
 }
 
 export async function getBrands(): Promise<Brand[]> {
   const response = await fetch('/api/brands');
   const result = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(result.error || 'Error fetching brands');
   }
-  
+
   return result.data || [];
 }
 
 export async function getProductTypes(): Promise<ProductType[]> {
   const response = await fetch('/api/product-types');
   const result = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(result.error || 'Error fetching product types');
   }
-  
+
+  return result.data || [];
+}
+
+export async function getFeaturedProducts(): Promise<ProductVariant[]> {
+  const response = await fetch('/api/inventory/featured');
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Error fetching featured products');
+  }
+
   return result.data || [];
 }
 
