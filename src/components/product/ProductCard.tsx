@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductVariant } from "@/types/database";
 import { formatPrice } from "@/utils/formatters";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatCurrency } from "@/utils/currency";
 
 interface ProductCardProps {
   product: ProductVariant;
@@ -12,6 +14,7 @@ export default function ProductCard({
   product,
   showAddToCart = false,
 }: ProductCardProps) {
+  const { currency, exchangeRate } = useCurrency();
   const primaryImage =
     product.product_images && product.product_images.length > 0
       ? product.product_images[0]
@@ -50,7 +53,7 @@ export default function ProductCard({
                 console.log("Add to cart:", product.id);
               }}
             >
-              ADD TO CART
+              AGREGAR AL CARRITO
             </button>
           </div>
         )}
@@ -67,7 +70,7 @@ export default function ProductCard({
 
         <div className="flex justify-center items-center gap-2">
           <span className="font-light" style={{ color: "#dbb58e" }}>
-            {formatPrice(displayPrice)}
+            {formatCurrency(displayPrice, currency, exchangeRate)}
           </span>
         </div>
       </div>

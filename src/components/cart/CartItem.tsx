@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import { CartItem as CartItemType } from '@/store/cartStore';
 import { formatPrice } from '@/utils/formatters';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { formatCurrency } from '@/utils/currency';
 
 interface CartItemProps {
   item: CartItemType;
@@ -9,6 +11,7 @@ interface CartItemProps {
 }
 
 export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+  const { currency, exchangeRate } = useCurrency();
   const handleIncrement = () => {
     onUpdateQuantity(item.productId, item.quantity + 1);
   };
@@ -41,11 +44,11 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
             {item.productName}
           </h3>
           <p className="text-xs font-light" style={{ color: '#172e3c', opacity: 0.6 }}>
-            Code: {item.productCode}
+            Código: {item.productCode}
           </p>
           {item.size && (
             <p className="text-xs font-light" style={{ color: '#172e3c', opacity: 0.6 }}>
-              Size: {item.size}
+              Tamaño: {item.size}
             </p>
           )}
           {item.color && (
@@ -62,7 +65,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
               onClick={handleDecrement}
               className="px-2 py-1 hover:bg-gray-100 transition-colors"
               style={{ color: '#172e3c' }}
-              aria-label="Decrease quantity"
+              aria-label="Disminuir cantidad"
             >
               −
             </button>
@@ -73,7 +76,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
               onClick={handleIncrement}
               className="px-2 py-1 hover:bg-gray-100 transition-colors"
               style={{ color: '#172e3c' }}
-              aria-label="Increase quantity"
+              aria-label="Aumentar cantidad"
             >
               +
             </button>
@@ -82,7 +85,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
           {/* Price */}
           <div className="text-right">
             <p className="text-sm font-medium" style={{ color: '#dbb58e' }}>
-              {formatPrice(itemTotal)}
+              {formatCurrency(itemTotal, currency, exchangeRate)}
             </p>
           </div>
         </div>
@@ -93,7 +96,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }: CartItemP
         onClick={() => onRemove(item.productId)}
         className="self-start hover:opacity-70 transition-opacity"
         style={{ color: '#172e3c' }}
-        aria-label="Remove item"
+        aria-label="Eliminar artículo"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

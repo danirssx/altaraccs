@@ -6,6 +6,8 @@ import Image from "next/image";
 import { getProductVariant } from "@/lib/api/inventory";
 import Link from "next/link";
 import { use } from "react";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatCurrency } from "@/utils/currency";
 
 export default function ProductDetailPage({
   params,
@@ -13,6 +15,7 @@ export default function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
+  const { currency, exchangeRate } = useCurrency();
   const [product, setProduct] = useState<ProductVariant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +50,7 @@ export default function ProductDetailPage({
         style={{ backgroundColor: "#fffff5" }}
       >
         <div className="text-center" style={{ color: "#172e3c" }}>
-          <div className="text-xl font-light">Loading...</div>
+          <div className="text-xl font-light">Cargando...</div>
         </div>
       </div>
     );
@@ -60,7 +63,7 @@ export default function ProductDetailPage({
         style={{ backgroundColor: "#fffff5" }}
       >
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || "Product not found"}</p>
+          <p className="text-red-600 mb-4">{error || "Producto no encontrado"}</p>
           <Link
             href="/showroom"
             className="px-6 py-2 transition-colors"
@@ -69,7 +72,7 @@ export default function ProductDetailPage({
               color: "#fffff5",
             }}
           >
-            Back to Products
+            Volver a Productos
           </Link>
         </div>
       </div>
@@ -176,7 +179,7 @@ export default function ProductDetailPage({
                   className="text-2xl font-light"
                   style={{ color: "#dbb58e" }}
                 >
-                  ${product.price}
+                  {formatCurrency(product.price, currency, exchangeRate)}
                 </span>
               </div>
             </div>
@@ -204,7 +207,7 @@ export default function ProductDetailPage({
                     className="font-light"
                     style={{ color: "#172e3c", opacity: 0.7 }}
                   >
-                    Product Code:
+                    Código de Producto:
                   </span>
                   <span className="font-light" style={{ color: "#172e3c" }}>
                     {product.code}
@@ -217,7 +220,7 @@ export default function ProductDetailPage({
                       className="font-light"
                       style={{ color: "#172e3c", opacity: 0.7 }}
                     >
-                      Brand:
+                      Marca:
                     </span>
                     <span className="font-light" style={{ color: "#172e3c" }}>
                       {product.product_groups.brands.name}
@@ -231,7 +234,7 @@ export default function ProductDetailPage({
                       className="font-light"
                       style={{ color: "#172e3c", opacity: 0.7 }}
                     >
-                      Category:
+                      Categoría:
                     </span>
                     <span className="font-light" style={{ color: "#172e3c" }}>
                       {product.product_groups.product_types.name}
@@ -245,7 +248,7 @@ export default function ProductDetailPage({
                       className="font-light"
                       style={{ color: "#172e3c", opacity: 0.7 }}
                     >
-                      Size:
+                      Tamaño:
                     </span>
                     <span className="font-light" style={{ color: "#172e3c" }}>
                       {product.size}
@@ -273,7 +276,7 @@ export default function ProductDetailPage({
                       className="font-light"
                       style={{ color: "#172e3c", opacity: 0.7 }}
                     >
-                      Availability:
+                      Disponibilidad:
                     </span>
                     <span
                       className="font-light"
@@ -285,8 +288,8 @@ export default function ProductDetailPage({
                       }}
                     >
                       {product.inventory_current.quantity > 0
-                        ? "In Stock"
-                        : "Out of Stock"}
+                        ? "En Stock"
+                        : "Agotado"}
                     </span>
                   </div>
                 )}
@@ -327,7 +330,7 @@ export default function ProductDetailPage({
               className="object-contain mb-6"
             />
             <p className="text-sm font-light" style={{ color: "#172e3c" }}>
-              © {new Date().getFullYear()} Altara. All rights reserved.
+              © {new Date().getFullYear()} Altara. Todos los derechos reservados.
             </p>
           </div>
         </div>

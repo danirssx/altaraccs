@@ -9,6 +9,8 @@ import { use } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "sonner";
 import { formatPrice } from "@/utils/formatters";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { formatCurrency } from "@/utils/currency";
 
 export default function ProductDetailPage({
   params,
@@ -16,6 +18,7 @@ export default function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
+  const { currency, exchangeRate } = useCurrency();
   const [product, setProduct] = useState<ProductVariant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +70,8 @@ export default function ProductDetailPage({
       color: product.color || undefined,
     });
 
-    toast.success("Added to cart!", {
-      description: `${quantity} ${quantity === 1 ? "item" : "items"} added to your cart`,
+    toast.success("¡Agregado al carrito!", {
+      description: `${quantity} ${quantity === 1 ? "artículo" : "artículos"} agregados a tu carrito`,
     });
 
     openCart();
@@ -84,7 +87,7 @@ export default function ProductDetailPage({
             style={{ borderColor: "#172e3c" }}
           />
           <p className="text-xl font-light" style={{ color: "#172e3c" }}>
-            Loading...
+            Cargando...
           </p>
         </div>
       </div>
@@ -95,7 +98,7 @@ export default function ProductDetailPage({
     return (
       <div className="min-h-screen bg-cream flex flex-col items-center justify-center px-4">
         <p className="text-red-600 mb-6 text-lg">
-          {error || "Product not found"}
+          {error || "Producto no encontrado"}
         </p>
         <Link
           href="/showroom"
@@ -105,7 +108,7 @@ export default function ProductDetailPage({
             color: "#fffff5",
           }}
         >
-          Back to Showroom
+          Volver al Showroom
         </Link>
       </div>
     );
@@ -129,7 +132,7 @@ export default function ProductDetailPage({
           style={{ color: "#172e3c" }}
         >
           <Link href="/" className="hover:opacity-70 transition-opacity">
-            Home
+            Inicio
           </Link>
           <span style={{ opacity: 0.5 }}>/</span>
           <Link
@@ -236,7 +239,7 @@ export default function ProductDetailPage({
                 className="text-2xl md:text-3xl font-light"
                 style={{ color: "#dbb58e" }}
               >
-                {formatPrice(product.price)}
+                {formatCurrency(product.price, currency, exchangeRate)}
               </span>
             </div>
 
@@ -261,7 +264,7 @@ export default function ProductDetailPage({
                 className="text-xs tracking-[0.2em] uppercase font-medium mb-4"
                 style={{ color: "#172e3c" }}
               >
-                Details
+                Detalles
               </h3>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -270,7 +273,7 @@ export default function ProductDetailPage({
                     className="font-light"
                     style={{ color: "#172e3c", opacity: 0.6 }}
                   >
-                    Product Code
+                    Código de Producto
                   </span>
                   <p className="font-light mt-1" style={{ color: "#172e3c" }}>
                     {product.code}
@@ -283,7 +286,7 @@ export default function ProductDetailPage({
                       className="font-light"
                       style={{ color: "#172e3c", opacity: 0.6 }}
                     >
-                      Size
+                      Tamaño
                     </span>
                     <p className="font-light mt-1" style={{ color: "#172e3c" }}>
                       {product.size}
@@ -311,7 +314,7 @@ export default function ProductDetailPage({
                       className="font-light"
                       style={{ color: "#172e3c", opacity: 0.6 }}
                     >
-                      Composition
+                      Composición
                     </span>
                     <p className="font-light mt-1" style={{ color: "#172e3c" }}>
                       {product.composition}
@@ -332,8 +335,8 @@ export default function ProductDetailPage({
                   style={{ color: inStock ? "#22c55e" : "#ef4444" }}
                 >
                   {inStock
-                    ? `In Stock (${availableStock} available)`
-                    : "Out of Stock"}
+                    ? `En Stock (${availableStock} disponibles)`
+                    : "Agotado"}
                 </span>
               </div>
             </div>
@@ -345,7 +348,7 @@ export default function ProductDetailPage({
                   className="block text-xs tracking-[0.15em] uppercase font-light mb-3"
                   style={{ color: "#172e3c" }}
                 >
-                  Quantity
+                  Cantidad
                 </label>
                 <div
                   className="inline-flex items-center border"
@@ -387,7 +390,7 @@ export default function ProductDetailPage({
                 color: "#fffff5",
               }}
             >
-              {inStock ? "Add to Cart" : "Out of Stock"}
+              {inStock ? "Agregar al Carrito" : "Agotado"}
             </button>
           </div>
         </div>

@@ -44,21 +44,21 @@ export default function Footer() {
               className="text-lg font-light mb-4"
               style={{ color: "#172e3c" }}
             >
-              Newsletter
+              Boletín
             </h3>
             <p
               className="text-sm font-light mb-4"
               style={{ color: "#172e3c", opacity: 0.8 }}
             >
-              Get our latest news and promo updates directly to your email
-              address every month.
+              Recibe nuestras últimas noticias y actualizaciones de promociones
+              directamente en tu correo electrónico cada mes.
             </p>
             <form onSubmit={handleSubscribe} className="mb-4">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address ..."
+                placeholder="Ingresa tu dirección de correo electrónico ..."
                 className="w-full px-4 py-2 mb-3 border text-sm font-light"
                 style={{
                   backgroundColor: "#fffff5",
@@ -75,33 +75,9 @@ export default function Footer() {
                   color: "#172e3c",
                 }}
               >
-                SUBSCRIBE
+                SUSCRIBIRSE
               </button>
             </form>
-            {/* Social Media Links */}
-            <div className="flex gap-4">
-              <a
-                href="#"
-                className="text-sm font-light hover:opacity-70"
-                style={{ color: "#172e3c" }}
-              >
-                FB
-              </a>
-              <a
-                href="#"
-                className="text-sm font-light hover:opacity-70"
-                style={{ color: "#172e3c" }}
-              >
-                IG
-              </a>
-              <a
-                href="#"
-                className="text-sm font-light hover:opacity-70"
-                style={{ color: "#172e3c" }}
-              >
-                TW
-              </a>
-            </div>
           </div>
 
           {/* Logo & Contact Info */}
@@ -124,7 +100,7 @@ export default function Footer() {
                   className="text-sm font-light"
                   style={{ color: "#172e3c" }}
                 >
-                  <p className="font-medium">Phone</p>
+                  <p className="font-medium">Teléfono</p>
                   <p className="opacity-80">+58 (424) 218 5034</p>
                 </div>
               </div>
@@ -136,7 +112,7 @@ export default function Footer() {
                   className="text-sm font-light"
                   style={{ color: "#172e3c" }}
                 >
-                  <p className="font-medium">E-Mail</p>
+                  <p className="font-medium">Correo Electrónico</p>
                   <p className="opacity-80">altarastoreccs@gmail.com</p>
                 </div>
               </div>
@@ -149,7 +125,7 @@ export default function Footer() {
               className="text-lg font-light mb-4"
               style={{ color: "#172e3c" }}
             >
-              Products
+              Productos
             </h3>
             <ul className="space-y-2">
               <li>
@@ -158,7 +134,7 @@ export default function Footer() {
                   className="text-sm font-light hover:opacity-70 transition-opacity"
                   style={{ color: "#172e3c" }}
                 >
-                  All Products
+                  Todos los Productos
                 </Link>
               </li>
               {productTypes.map((type) => (
@@ -180,22 +156,7 @@ export default function Footer() {
         <div
           className="pt-6 border-t flex flex-col md:flex-row justify-between items-center gap-4"
           style={{ borderColor: "#d6e2e2" }}
-        >
-          <div className="flex gap-3">
-            {["VS", "MC", "AP", "PP"].map((method) => (
-              <div
-                key={method}
-                className="px-3 py-1 text-xs font-medium border rounded"
-                style={{
-                  borderColor: "#d6e2e2",
-                  color: "#172e3c",
-                }}
-              >
-                {method}
-              </div>
-            ))}
-          </div>
-        </div>
+        ></div>
 
         {/* Copyright */}
         <div className="text-center mt-6">
@@ -203,7 +164,7 @@ export default function Footer() {
             className="text-sm font-light"
             style={{ color: "#172e3c", opacity: 0.7 }}
           >
-            © {new Date().getFullYear()} Altara. All rights reserved.
+            © {new Date().getFullYear()} Altara. Todos los derechos reservados.
           </p>
         </div>
       </div>

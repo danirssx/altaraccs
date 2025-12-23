@@ -13,7 +13,7 @@ export default function ProductGrid({ products, loading = false, showAddToCart =
       <div className="text-center py-16">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#172e3c' }}></div>
         <p className="mt-4 text-lg font-light" style={{ color: '#172e3c' }}>
-          Loading products...
+          Cargando productos...
         </p>
       </div>
     );
@@ -23,7 +23,7 @@ export default function ProductGrid({ products, loading = false, showAddToCart =
     return (
       <div className="text-center py-16">
         <p className="text-lg font-light" style={{ color: '#172e3c' }}>
-          No products available at the moment.
+          No hay productos disponibles en este momento.
         </p>
       </div>
     );
@@ -34,7 +34,7 @@ export default function ProductGrid({ products, loading = false, showAddToCart =
       {/* Product Count */}
       <div className="text-center mb-8">
         <p className="text-sm tracking-wider font-light" style={{ color: '#172e3c' }}>
-          Showing {products.length} {products.length === 1 ? 'result' : 'results'}
+          Mostrando {products.length} {products.length === 1 ? 'resultado' : 'resultados'}
         </p>
       </div>
 

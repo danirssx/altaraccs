@@ -5,9 +5,12 @@ import CartItem from './CartItem';
 import { formatPrice } from '@/utils/formatters';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { formatCurrency } from '@/utils/currency';
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, removeItem, getTotalPrice } = useCartStore();
+  const { currency, exchangeRate } = useCurrency();
 
   const subtotal = getTotalPrice();
 
@@ -51,13 +54,13 @@ export default function CartDrawer() {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: '#d6e2e2' }}>
           <h2 className="text-xl font-light" style={{ fontFamily: 'Playfair Display, serif', color: '#172e3c' }}>
-            Shopping Cart
+            Carrito de Compras
           </h2>
           <button
             onClick={closeCart}
             className="hover:opacity-70 transition-opacity"
             style={{ color: '#172e3c' }}
-            aria-label="Close cart"
+            aria-label="Cerrar carrito"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -92,10 +95,10 @@ export default function CartDrawer() {
                 />
               </svg>
               <p className="text-lg font-light mb-2" style={{ color: '#172e3c' }}>
-                Your cart is empty
+                Tu carrito está vacío
               </p>
               <p className="text-sm font-light mb-6" style={{ color: '#172e3c', opacity: 0.7 }}>
-                Add some beautiful pieces to get started
+                Agrega algunas piezas hermosas para comenzar
               </p>
               <button
                 onClick={closeCart}
@@ -105,7 +108,7 @@ export default function CartDrawer() {
                   color: '#fffff5',
                 }}
               >
-                CONTINUE SHOPPING
+                CONTINUAR COMPRANDO
               </button>
             </div>
           ) : (
@@ -131,7 +134,7 @@ export default function CartDrawer() {
                 Subtotal
               </span>
               <span className="text-xl font-medium" style={{ color: '#dbb58e' }}>
-                {formatPrice(subtotal)}
+                {formatCurrency(subtotal, currency, exchangeRate)}
               </span>
             </div>
 
@@ -145,7 +148,7 @@ export default function CartDrawer() {
                 color: '#fffff5',
               }}
             >
-              PROCEED TO CHECKOUT
+              PROCEDER AL PAGO
             </Link>
 
             {/* Continue Shopping */}
@@ -158,7 +161,7 @@ export default function CartDrawer() {
                 backgroundColor: 'transparent',
               }}
             >
-              Continue Shopping
+              Continuar Comprando
             </button>
           </div>
         )}

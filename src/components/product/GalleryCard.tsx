@@ -2,12 +2,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ProductVariant } from '@/types/database';
 import { formatPrice } from '@/utils/formatters';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { formatCurrency } from '@/utils/currency';
 
 interface GalleryCardProps {
     product: ProductVariant;
 }
 
 export default function GalleryCard({ product }: GalleryCardProps) {
+    const { currency, exchangeRate } = useCurrency();
     const primaryImage = product.product_images?.[0]?.url_cloudinary;
     const name = product.product_groups?.name || `Product ${product.code}`;
     const brand = product.product_groups?.brands?.name;
@@ -64,13 +67,13 @@ export default function GalleryCard({ product }: GalleryCardProps) {
                                 className="text-sm font-light"
                                 style={{ color: '#dbb58e' }}
                             >
-                                {formatPrice(product.price)}
+                                {formatCurrency(product.price, currency, exchangeRate)}
                             </span>
 
                             <span
                                 className="text-xs tracking-[0.1em] uppercase px-3 py-1 bg-white/20 backdrop-blur-sm text-white"
                             >
-                                View
+                                Ver
                             </span>
                         </div>
                     </div>
@@ -80,7 +83,7 @@ export default function GalleryCard({ product }: GalleryCardProps) {
                 {!inStock && (
                     <div className="absolute top-4 left-4">
                         <span className="px-3 py-1 text-xs tracking-wider uppercase bg-black/70 text-white">
-                            Sold Out
+                            Agotado
                         </span>
                     </div>
                 )}
@@ -99,7 +102,7 @@ export default function GalleryCard({ product }: GalleryCardProps) {
                     className="text-sm font-light"
                     style={{ color: '#dbb58e' }}
                 >
-                    {formatPrice(product.price)}
+                    {formatCurrency(product.price, currency, exchangeRate)}
                 </span>
             </div>
         </Link>

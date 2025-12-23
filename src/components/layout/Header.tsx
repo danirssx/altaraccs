@@ -6,9 +6,11 @@ import { useCartStore } from '@/store/cartStore';
 import { ProductType } from '@/types/database';
 import { useState, useEffect, useRef } from 'react';
 import { getProductTypes } from '@/lib/api/inventory';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 export default function Header() {
   const { getTotalItems, toggleCart } = useCartStore();
+  const { currency, toggleCurrency, exchangeRate } = useCurrency();
   const totalItems = getTotalItems();
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -51,7 +53,7 @@ export default function Header() {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="lg:hidden w-10 h-10 flex items-center justify-center"
-              aria-label="Toggle menu"
+              aria-label="Alternar menú"
             >
               <svg
                 className="w-6 h-6"
@@ -77,7 +79,7 @@ export default function Header() {
                   className="flex items-center gap-1 text-sm tracking-[0.1em] uppercase font-light transition-opacity hover:opacity-70"
                   style={{ color: '#172e3c' }}
                 >
-                  Shop
+                  Tienda
                   <svg
                     className={`w-4 h-4 transition-transform duration-200 ${isShopOpen ? 'rotate-180' : ''}`}
                     fill="none"
@@ -100,7 +102,7 @@ export default function Header() {
                       className="block py-2 text-sm font-light transition-colors hover:opacity-70"
                       style={{ color: '#172e3c' }}
                     >
-                      All Products
+                      Todos los Productos
                     </Link>
 
                     <div className="border-t my-2" style={{ borderColor: '#d6e2e2' }} />
@@ -125,7 +127,7 @@ export default function Header() {
                 className="text-sm tracking-[0.1em] uppercase font-light transition-opacity hover:opacity-70"
                 style={{ color: '#172e3c' }}
               >
-                Collection
+                Colección
               </Link>
             </nav>
           </div>
@@ -144,13 +146,40 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Right Section - Cart */}
+          {/* Right Section - Currency Toggle & Cart */}
           <div className="flex items-center justify-end gap-4">
+            {/* Currency Toggle Button */}
+            <button
+              onClick={toggleCurrency}
+              className="flex items-center gap-2 px-3 py-2 border hover:bg-gray-50 transition-colors text-xs tracking-wider font-medium"
+              style={{
+                borderColor: '#d6e2e2',
+                color: '#172e3c',
+              }}
+              title={currency === 'USD' ? 'Ver precios en Bolívares' : 'Ver precios en Dólares'}
+            >
+              <span className="font-semibold">{currency}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-4 h-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+                />
+              </svg>
+            </button>
+
             {/* Cart Icon */}
             <button
               onClick={toggleCart}
               className="relative flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
-              aria-label="Shopping cart"
+              aria-label="Carrito de compras"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +222,7 @@ export default function Header() {
                 className="block text-sm tracking-[0.1em] uppercase font-light py-2"
                 style={{ color: '#172e3c' }}
               >
-                All Products
+                Todos los Productos
               </Link>
 
               <div className="border-t pt-4" style={{ borderColor: '#d6e2e2' }}>
@@ -201,7 +230,7 @@ export default function Header() {
                   className="text-xs tracking-[0.2em] uppercase mb-3"
                   style={{ color: '#dbb58e' }}
                 >
-                  Categories
+                  Categorías
                 </p>
                 {productTypes.map((type) => (
                   <Link

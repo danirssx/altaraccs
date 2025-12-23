@@ -8,10 +8,13 @@ import { sendOrderToWhatsApp } from '@/utils/whatsapp';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { formatCurrency, convertToVes } from '@/utils/currency';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice, clearCart } = useCartStore();
+  const { currency, exchangeRate } = useCurrency();
   const [submitting, setSubmitting] = useState(false);
 
   // Form state
@@ -58,31 +61,42 @@ export default function CheckoutPage() {
         notes,
       };
 
-      // Save order to database
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create order');
+      // Send to WhatsApp first (primary action)
+      try {
+        sendOrderToWhatsApp(orderData);
+      } catch (whatsappError) {
+        console.error('Error sending to WhatsApp:', whatsappError);
+        toast.error('Error al abrir WhatsApp', {
+          description: 'Por favor verifica que tienes WhatsApp instalado',
+        });
+        setSubmitting(false);
+        return;
       }
 
-      const result = await response.json();
+      // Try to save order to database (optional, don't block if it fails)
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderData),
+        });
 
-      // Send to WhatsApp
-      sendOrderToWhatsApp(orderData);
+        if (!response.ok) {
+          console.error('Failed to save order to database, but WhatsApp message was sent');
+        }
+      } catch (dbError) {
+        console.error('Database error (non-critical):', dbError);
+        // Continue anyway since WhatsApp is the primary channel
+      }
 
       // Clear cart
       clearCart();
 
       // Show success message
-      toast.success('Order sent!', {
-        description: 'Your order has been sent via WhatsApp. We\'ll be in touch shortly!',
+      toast.success('¡Pedido enviado!', {
+        description: 'Tu pedido ha sido enviado por WhatsApp. ¡Nos pondremos en contacto pronto!',
       });
 
       // Redirect to home page after a short delay
@@ -92,8 +106,8 @@ export default function CheckoutPage() {
 
     } catch (error) {
       console.error('Error submitting order:', error);
-      toast.error('Error submitting order', {
-        description: error instanceof Error ? error.message : 'Please try again',
+      toast.error('Error al enviar el pedido', {
+        description: error instanceof Error ? error.message : 'Por favor intenta de nuevo',
       });
     } finally {
       setSubmitting(false);
@@ -114,7 +128,7 @@ export default function CheckoutPage() {
             fontFamily: 'Playfair Display, serif',
           }}
         >
-          Checkout
+          Finalizar Compra
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -124,12 +138,12 @@ export default function CheckoutPage() {
               {/* Customer Information */}
               <div className="mb-8">
                 <h2 className="text-xl font-light mb-4" style={{ color: '#172e3c' }}>
-                  Customer Information
+                  Información del Cliente
                 </h2>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                      Full Name *
+                      Nombre Completo *
                     </label>
                     <input
                       type="text"
@@ -165,7 +179,7 @@ export default function CheckoutPage() {
 
                   <div>
                     <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                      Phone *
+                      Teléfono *
                     </label>
                     <input
                       type="tel"
@@ -186,7 +200,7 @@ export default function CheckoutPage() {
               {/* Delivery Option */}
               <div className="mb-8">
                 <h2 className="text-xl font-light mb-4" style={{ color: '#172e3c' }}>
-                  Delivery Option *
+                  Opción de Entrega *
                 </h2>
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 p-4 border cursor-pointer hover:bg-gray-50 transition-colors"
@@ -200,7 +214,7 @@ export default function CheckoutPage() {
                       className="w-4 h-4"
                     />
                     <span className="font-light" style={{ color: '#172e3c' }}>
-                      Store Pickup
+                      Recoger en Tienda
                     </span>
                   </label>
 
@@ -215,7 +229,7 @@ export default function CheckoutPage() {
                       className="w-4 h-4"
                     />
                     <span className="font-light" style={{ color: '#172e3c' }}>
-                      Home Delivery
+                      Entrega a Domicilio
                     </span>
                   </label>
                 </div>
@@ -225,12 +239,12 @@ export default function CheckoutPage() {
               {deliveryOption === 'delivery' && (
                 <div className="mb-8">
                   <h2 className="text-xl font-light mb-4" style={{ color: '#172e3c' }}>
-                    Shipping Address
+                    Dirección de Envío
                   </h2>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                        Address Line 1 *
+                        Dirección Línea 1 *
                       </label>
                       <input
                         type="text"
@@ -249,7 +263,7 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                          City *
+                          Ciudad *
                         </label>
                         <input
                           type="text"
@@ -267,7 +281,7 @@ export default function CheckoutPage() {
 
                       <div>
                         <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                          State/Province *
+                          Estado/Provincia *
                         </label>
                         <input
                           type="text"
@@ -287,7 +301,7 @@ export default function CheckoutPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                          Postal Code *
+                          Código Postal *
                         </label>
                         <input
                           type="text"
@@ -305,7 +319,7 @@ export default function CheckoutPage() {
 
                       <div>
                         <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                          Country *
+                          País *
                         </label>
                         <input
                           type="text"
@@ -328,7 +342,7 @@ export default function CheckoutPage() {
               {/* Order Notes */}
               <div className="mb-8">
                 <label className="block text-sm font-light mb-2" style={{ color: '#172e3c' }}>
-                  Order Notes (Optional)
+                  Notas del Pedido (Opcional)
                 </label>
                 <textarea
                   value={notes}
@@ -340,7 +354,7 @@ export default function CheckoutPage() {
                     borderColor: '#d6e2e2',
                     color: '#172e3c',
                   }}
-                  placeholder="Any special requests or notes..."
+                  placeholder="Cualquier solicitud o nota especial..."
                 />
               </div>
 
@@ -354,7 +368,7 @@ export default function CheckoutPage() {
                   color: '#fffff5',
                 }}
               >
-                {submitting ? 'SENDING...' : 'SEND ORDER VIA WHATSAPP'}
+                {submitting ? 'ENVIANDO...' : 'ENVIAR PEDIDO POR WHATSAPP'}
               </button>
             </form>
           </div>
@@ -363,7 +377,7 @@ export default function CheckoutPage() {
           <div>
             <div className="border p-6" style={{ borderColor: '#d6e2e2', backgroundColor: '#f7f1e3' }}>
               <h2 className="text-xl font-light mb-6" style={{ color: '#172e3c' }}>
-                Order Summary
+                Resumen del Pedido
               </h2>
 
               {/* Cart Items */}
@@ -384,10 +398,10 @@ export default function CheckoutPage() {
                         {item.productName}
                       </h3>
                       <p className="text-xs font-light mb-2" style={{ color: '#172e3c', opacity: 0.6 }}>
-                        Code: {item.productCode} | Qty: {item.quantity}
+                        Código: {item.productCode} | Cant: {item.quantity}
                       </p>
                       <p className="text-sm font-medium" style={{ color: '#dbb58e' }}>
-                        {formatPrice(item.price * item.quantity)}
+                        {formatCurrency(item.price * item.quantity, currency, exchangeRate)}
                       </p>
                     </div>
                   </div>
@@ -404,13 +418,35 @@ export default function CheckoutPage() {
                     {formatPrice(subtotal)}
                   </span>
                 </div>
-                <div className="flex justify-between text-lg font-medium">
-                  <span style={{ color: '#172e3c' }}>
-                    Total
-                  </span>
-                  <span style={{ color: '#dbb58e' }}>
-                    {formatPrice(subtotal)}
-                  </span>
+
+                {/* Show both currencies */}
+                <div className="space-y-2 py-3 border-t" style={{ borderColor: '#d6e2e2' }}>
+                  <div className="flex justify-between text-lg font-medium">
+                    <span style={{ color: '#172e3c' }}>
+                      Total (USD)
+                    </span>
+                    <span style={{ color: '#dbb58e' }}>
+                      ${subtotal.toFixed(2)}
+                    </span>
+                  </div>
+
+                  {exchangeRate && (
+                    <div className="flex justify-between text-lg font-medium">
+                      <span style={{ color: '#172e3c' }}>
+                        Total (Bs.)
+                      </span>
+                      <span style={{ color: '#dbb58e' }}>
+                        Bs. {convertToVes(subtotal, exchangeRate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Exchange rate note */}
+                  {exchangeRate && (
+                    <p className="text-xs font-light pt-2" style={{ color: '#172e3c', opacity: 0.7 }}>
+                      * Tasa BCV Euro: Bs. {exchangeRate.toFixed(2)}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -420,7 +456,7 @@ export default function CheckoutPage() {
                 className="block text-center mt-6 text-sm font-light hover:opacity-70 transition-opacity"
                 style={{ color: '#172e3c' }}
               >
-                ← Continue Shopping
+                ← Continuar Comprando
               </Link>
             </div>
           </div>

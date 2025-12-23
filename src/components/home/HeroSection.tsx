@@ -26,7 +26,7 @@ export default function HeroSection() {
               className="inline-block text-xs tracking-[0.3em] uppercase mb-6 font-light"
               style={{ color: "#dbb58e" }}
             >
-              Fine Jewelry Collection
+              Colección de Joyería Fina
             </span>
 
             <h1
@@ -38,17 +38,17 @@ export default function HeroSection() {
                 letterSpacing: "-0.02em",
               }}
             >
-              Timeless
+              <span className="italic">Elegancia</span>
               <br />
-              <span className="italic">Elegance</span>
+              Atemporal
             </h1>
 
             <p
               className="text-base md:text-lg font-light mb-10 max-w-md mx-auto lg:mx-0 leading-relaxed"
               style={{ color: "#172e3c", opacity: 0.8 }}
             >
-              Discover our exquisite collection of jewelry, where each piece
-              tells a story of artistry and refined taste.
+              Descubre nuestra exquisita colección de joyería, donde cada pieza
+              cuenta una historia de arte y gusto refinado.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -60,18 +60,18 @@ export default function HeroSection() {
                   color: "#fffff5",
                 }}
               >
-                Shop Collection
+                Comprar Colección
               </Link>
 
               <Link
                 href="/showroom"
-                className="inline-block px-10 py-4 text-sm tracking-[0.2em] uppercase border transition-all duration-300 hover:bg-[#172e3c] hover:text-[#fffff5] hover:border-[#172e3c]"
+                className="inline-block px-10 py-4 text-sm tracking-[0.2em] uppercase border transition-all duration-300 hover:bg-[#4a80a1] hover:text-[#fffff5] hover:border-[#172e3c]"
                 style={{
                   borderColor: "#172e3c",
                   color: "#172e3c",
                 }}
               >
-                View All
+                Ver Todo
               </Link>
             </div>
           </div>

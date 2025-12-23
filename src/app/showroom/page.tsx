@@ -71,7 +71,7 @@ function ShowroomContent() {
             className="inline-block text-xs tracking-[0.3em] uppercase mb-4 font-light"
             style={{ color: "#dbb58e" }}
           >
-            Our Collection
+            Nuestra Colección
           </span>
 
           <h1
@@ -82,14 +82,14 @@ function ShowroomContent() {
               fontWeight: 400,
             }}
           >
-            The <span className="italic">Showroom</span>
+            El <span className="italic">Showroom</span>
           </h1>
 
           <p
             className="text-base font-light max-w-lg mx-auto"
             style={{ color: "#172e3c", opacity: 0.7 }}
           >
-            Browse our complete collection of jewelry pieces
+            Explora nuestra colección completa de piezas de joyería
           </p>
         </div>
       </section>
@@ -109,7 +109,7 @@ function ShowroomContent() {
                   : "bg-transparent text-[#172e3c] border-[#d6e2e2] hover:border-[#172e3c]"
               }`}
             >
-              All
+              Todo
             </button>
 
             {productTypes.map((type) => (
@@ -142,13 +142,13 @@ function ShowroomContent() {
                 className="mt-4 text-lg font-light"
                 style={{ color: "#172e3c" }}
               >
-                Loading collection...
+                Cargando colección...
               </p>
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-lg font-light" style={{ color: "#172e3c" }}>
-                No products found in this category.
+                No se encontraron productos en esta categoría.
               </p>
             </div>
           ) : (
@@ -159,8 +159,8 @@ function ShowroomContent() {
                   className="text-sm tracking-wider font-light"
                   style={{ color: "#172e3c", opacity: 0.7 }}
                 >
-                  Showing {filteredProducts.length}{" "}
-                  {filteredProducts.length === 1 ? "piece" : "pieces"}
+                  Mostrando {filteredProducts.length}{" "}
+                  {filteredProducts.length === 1 ? "pieza" : "piezas"}
                 </p>
               </div>
 
@@ -187,7 +187,7 @@ function ShowroomLoading() {
           style={{ borderColor: "#172e3c" }}
         />
         <p className="mt-4 text-lg font-light" style={{ color: "#172e3c" }}>
-          Loading showroom...
+          Cargando showroom...
         </p>
       </div>
     </div>
