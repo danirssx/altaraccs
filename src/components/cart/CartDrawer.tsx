@@ -2,7 +2,6 @@
 
 import { useCartStore } from '@/store/cartStore';
 import CartItem from './CartItem';
-import { formatPrice } from '@/utils/formatters';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useCurrency } from '@/contexts/CurrencyContext';

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ProductVariant } from "@/types/database";
-import { formatPrice } from "@/utils/formatters";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { formatCurrency } from "@/utils/currency";
 

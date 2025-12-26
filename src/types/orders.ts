@@ -40,7 +40,7 @@ export interface OrderStatusHistory {
   actor_uid?: string;
   actor_name?: string;
   created_at: string;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   from_status?: OrderStatus;
   to_status?: OrderStatus;
 }

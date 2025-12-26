@@ -13,9 +13,10 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { data: order, error } = await supabase
       .from("orders")
       .select(
@@ -39,7 +40,7 @@ export async function GET(
         )
       `
       )
-      .eq("id", params.id)
+      .eq("id", id)
       .order("created_at", {
         ascending: false,
         foreignTable: "order_status_history",
@@ -69,9 +70,10 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { status: newStatusCode, customerInfo, notes } = body;
 
@@ -85,7 +87,7 @@ export async function PATCH(
         order_items(*)
       `
       )
-      .eq("id", params.id)
+      .eq("id", id)
       .single();
 
     if (fetchError || !currentOrder) {
@@ -176,7 +178,7 @@ export async function PATCH(
       const { error: orderUpdateError } = await supabase
         .from("orders")
         .update({ status_id: confirmedStatus.id })
-        .eq("id", params.id);
+        .eq("id", id);
 
       if (orderUpdateError) {
         return NextResponse.json(
@@ -213,7 +215,7 @@ export async function PATCH(
       await supabase
         .from("orders")
         .update({ status_id: newStatus.id })
-        .eq("id", params.id);
+        .eq("id", id);
 
       await supabase.from("order_status_history").insert({
         order_id: currentOrder.id,
@@ -232,7 +234,7 @@ export async function PATCH(
           customer_email: customerInfo.email,
           customer_phone: customerInfo.phone,
         })
-        .eq("id", params.id);
+        .eq("id", id);
     }
 
     // Update notes if provided
@@ -240,7 +242,7 @@ export async function PATCH(
       await supabase
         .from("orders")
         .update({ notes_internal: notes })
-        .eq("id", params.id);
+        .eq("id", id);
     }
 
     return NextResponse.json({ success: true });

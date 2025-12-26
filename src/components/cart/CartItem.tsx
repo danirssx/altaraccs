@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { CartItem as CartItemType } from '@/store/cartStore';
-import { formatPrice } from '@/utils/formatters';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { formatCurrency } from '@/utils/currency';
 

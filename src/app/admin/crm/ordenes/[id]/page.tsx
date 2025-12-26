@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useReactToPrint } from "react-to-print";
 import { Order } from "@/types/orders";
 import { toast } from "sonner";
+import Invoice from "@/components/invoice/Invoice";
 
 export default function OrderDetailPage({
   params,
@@ -17,6 +19,12 @@ export default function OrderDetailPage({
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const invoiceRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useReactToPrint({
+    contentRef: invoiceRef,
+    documentTitle: `Factura-${order?.order_number || "orden"}`,
+  });
 
   useEffect(() => {
     loadOrder();
@@ -140,7 +148,7 @@ export default function OrderDetailPage({
         >
           ← Volver a órdenes
         </Link>
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
           <div>
             <h1
               className="text-3xl font-light mb-2"
@@ -155,13 +163,38 @@ export default function OrderDetailPage({
               Creada el {formatDate(order.created_at)}
             </p>
           </div>
-          <span
-            className={`px-4 py-2 text-sm font-medium rounded-full border ${getStatusBadgeColor(
-              order.order_statuses?.code || "",
-            )}`}
-          >
-            {order.order_statuses?.name}
-          </span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <span
+              className={`px-4 py-2 text-sm font-medium rounded-full border ${getStatusBadgeColor(
+                order.order_statuses?.code || "",
+              )}`}
+            >
+              {order.order_statuses?.name}
+            </span>
+            {(order.order_statuses?.code === "confirmed" ||
+              order.order_statuses?.code === "delivered") && (
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-2 px-4 py-2 border rounded-lg font-medium transition-all hover:opacity-70"
+                style={{ borderColor: "#172e3c", color: "#172e3c" }}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Descargar Factura
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -426,6 +459,13 @@ export default function OrderDetailPage({
               </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Hidden Invoice for Printing */}
+      <div className="hidden">
+        <div ref={invoiceRef}>
+          <Invoice order={order} />
         </div>
       </div>
     </div>

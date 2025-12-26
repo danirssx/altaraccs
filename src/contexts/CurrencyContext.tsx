@@ -2,12 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-interface ExchangeRate {
-  usd: number;
-  eur: number;
-  date: string;
-}
-
 interface CurrencyContextType {
   currency: 'USD' | 'VES';
   exchangeRate: number | null;
