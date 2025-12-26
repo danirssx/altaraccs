@@ -16,11 +16,19 @@ function ShowroomContent() {
   const [selectedType, setSelectedType] = useState<number | null>(
     typeParam ? parseInt(typeParam) : null,
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
 
   // Sync with URL parameter changes
   useEffect(() => {
     setSelectedType(typeParam ? parseInt(typeParam) : null);
+    setCurrentPage(1); // Reset to first page when type changes
   }, [typeParam]);
+
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedType]);
 
   useEffect(() => {
     loadData();
@@ -61,6 +69,12 @@ function ShowroomContent() {
   const filteredProducts = selectedType
     ? products.filter((p) => p.product_groups?.product_type_id === selectedType)
     : products;
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -159,17 +173,127 @@ function ShowroomContent() {
                   className="text-sm tracking-wider font-light"
                   style={{ color: "#172e3c", opacity: 0.7 }}
                 >
-                  Mostrando {filteredProducts.length}{" "}
+                  Mostrando {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} de {filteredProducts.length}{" "}
                   {filteredProducts.length === 1 ? "pieza" : "piezas"}
                 </p>
               </div>
 
               {/* Gallery Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                {filteredProducts.map((product) => (
+                {currentProducts.map((product) => (
                   <GalleryCard key={product.id} product={product} />
                 ))}
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="mt-12 md:mt-16">
+                  {/* Mobile Pagination */}
+                  <div className="flex md:hidden justify-center items-center gap-2">
+                    {/* Previous Button - Mobile */}
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-2 border transition-all duration-300 ${
+                        currentPage === 1
+                          ? "opacity-40 cursor-not-allowed border-[#d6e2e2] text-[#172e3c]"
+                          : "border-[#172e3c] text-[#172e3c] hover:bg-[#172e3c] hover:text-[#fffff5]"
+                      }`}
+                    >
+                      ←
+                    </button>
+
+                    {/* Current Page Indicator - Mobile */}
+                    <div className="px-4 py-2 text-[#172e3c] text-sm">
+                      Página {currentPage} de {totalPages}
+                    </div>
+
+                    {/* Next Button - Mobile */}
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-2 border transition-all duration-300 ${
+                        currentPage === totalPages
+                          ? "opacity-40 cursor-not-allowed border-[#d6e2e2] text-[#172e3c]"
+                          : "border-[#172e3c] text-[#172e3c] hover:bg-[#172e3c] hover:text-[#fffff5]"
+                      }`}
+                    >
+                      →
+                    </button>
+                  </div>
+
+                  {/* Desktop Pagination */}
+                  <div className="hidden md:flex justify-center items-center gap-2">
+                    {/* Previous Button */}
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`px-4 py-2 border transition-all duration-300 ${
+                        currentPage === 1
+                          ? "opacity-40 cursor-not-allowed border-[#d6e2e2] text-[#172e3c]"
+                          : "border-[#172e3c] text-[#172e3c] hover:bg-[#172e3c] hover:text-[#fffff5]"
+                      }`}
+                    >
+                      ← Anterior
+                    </button>
+
+                    {/* Page Numbers */}
+                    <div className="flex gap-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                        // Show first page, last page, current page, and pages around current
+                        const showPage =
+                          pageNum === 1 ||
+                          pageNum === totalPages ||
+                          (pageNum >= currentPage - 1 && pageNum <= currentPage + 1);
+
+                        const showEllipsis =
+                          (pageNum === currentPage - 2 && currentPage > 3) ||
+                          (pageNum === currentPage + 2 && currentPage < totalPages - 2);
+
+                        if (showEllipsis) {
+                          return (
+                            <span
+                              key={pageNum}
+                              className="px-2 py-2 text-[#172e3c]"
+                            >
+                              ...
+                            </span>
+                          );
+                        }
+
+                        if (!showPage) return null;
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`min-w-[40px] px-3 py-2 border transition-all duration-300 ${
+                              currentPage === pageNum
+                                ? "bg-[#172e3c] text-[#fffff5] border-[#172e3c]"
+                                : "bg-transparent text-[#172e3c] border-[#d6e2e2] hover:border-[#172e3c]"
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Next Button */}
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className={`px-4 py-2 border transition-all duration-300 ${
+                        currentPage === totalPages
+                          ? "opacity-40 cursor-not-allowed border-[#d6e2e2] text-[#172e3c]"
+                          : "border-[#172e3c] text-[#172e3c] hover:bg-[#172e3c] hover:text-[#fffff5]"
+                      }`}
+                    >
+                      Siguiente →
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

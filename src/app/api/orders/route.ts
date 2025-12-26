@@ -173,19 +173,61 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Get all orders (admin only - TODO: add authentication)
+ * Get all orders with filters (admin only)
  */
 export async function GET(request: NextRequest) {
   try {
-    const { data: orders, error } = await supabase
+    // Parse query parameters
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+
+    // Build query
+    let query = supabase
       .from('orders')
       .select(`
         *,
-        order_statuses (*),
-        order_items (*)
-      `)
-      .order('created_at', { ascending: false })
-      .limit(100);
+        order_statuses!status_id (*),
+        order_items (
+          *,
+          product_variants (
+            id,
+            code,
+            size,
+            color,
+            product_groups (name)
+          )
+        )
+      `, { count: 'exact' });
+
+    // Apply status filter
+    if (status && status !== 'all') {
+      const { data: statusData } = await supabase
+        .from('order_statuses')
+        .select('id')
+        .eq('code', status)
+        .single();
+
+      if (statusData) {
+        query = query.eq('status_id', statusData.id);
+      }
+    }
+
+    // Apply search filter
+    if (search) {
+      query = query.or(`customer_name.ilike.%${search}%,customer_email.ilike.%${search}%,customer_phone.ilike.%${search}%,order_number.ilike.%${search}%`);
+    }
+
+    // Apply pagination
+    const offset = (page - 1) * limit;
+    query = query.range(offset, offset + limit - 1);
+
+    // Apply sorting
+    query = query.order('created_at', { ascending: false });
+
+    const { data: orders, error, count } = await query;
 
     if (error) {
       console.error('Error fetching orders:', error);
@@ -195,7 +237,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(orders);
+    return NextResponse.json({
+      orders: orders || [],
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: Math.ceil((count || 0) / limit),
+      },
+    });
 
   } catch (error) {
     console.error('Error in GET /api/orders:', error);

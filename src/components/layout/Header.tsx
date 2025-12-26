@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCartStore } from '@/store/cartStore';
-import { ProductType } from '@/types/database';
-import { useState, useEffect, useRef } from 'react';
-import { getProductTypes } from '@/lib/api/inventory';
-import { useCurrency } from '@/contexts/CurrencyContext';
+import Image from "next/image";
+import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
+import { ProductType } from "@/types/database";
+import { useState, useEffect, useRef } from "react";
+import { getProductTypes } from "@/lib/api/inventory";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function Header() {
   const { getTotalItems, toggleCart } = useCartStore();
-  const { currency, toggleCurrency, exchangeRate } = useCurrency();
+  const { currency, toggleCurrency } = useCurrency();
   const totalItems = getTotalItems();
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,12 +25,15 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (shopMenuRef.current && !shopMenuRef.current.contains(event.target as Node)) {
+      if (
+        shopMenuRef.current &&
+        !shopMenuRef.current.contains(event.target as Node)
+      ) {
         setIsShopOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const loadProductTypes = async () => {
@@ -38,12 +41,15 @@ export default function Header() {
       const types = await getProductTypes();
       setProductTypes(types);
     } catch (error) {
-      console.error('Error loading product types:', error);
+      console.error("Error loading product types:", error);
     }
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-cream border-b" style={{ borderColor: '#d6e2e2' }}>
+    <header
+      className="sticky top-0 z-50 bg-cream border-b"
+      style={{ borderColor: "#d6e2e2" }}
+    >
       <div className="container mx-auto px-4">
         {/* Main Header Row */}
         <div className="grid grid-cols-3 items-center py-4 gap-4">
@@ -60,12 +66,22 @@ export default function Header() {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                style={{ color: '#172e3c' }}
+                style={{ color: "#172e3c" }}
               >
                 {isMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>
@@ -77,16 +93,21 @@ export default function Header() {
                 <button
                   onClick={() => setIsShopOpen(!isShopOpen)}
                   className="flex items-center gap-1 text-sm tracking-[0.1em] uppercase font-light transition-opacity hover:opacity-70"
-                  style={{ color: '#172e3c' }}
+                  style={{ color: "#172e3c" }}
                 >
                   Tienda
                   <svg
-                    className={`w-4 h-4 transition-transform duration-200 ${isShopOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 transition-transform duration-200 ${isShopOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -94,18 +115,21 @@ export default function Header() {
                 {isShopOpen && (
                   <div
                     className="absolute top-full left-0 mt-4 py-4 px-6 bg-white shadow-xl min-w-[200px] border"
-                    style={{ borderColor: '#d6e2e2' }}
+                    style={{ borderColor: "#d6e2e2" }}
                   >
                     <Link
                       href="/showroom"
                       onClick={() => setIsShopOpen(false)}
                       className="block py-2 text-sm font-light transition-colors hover:opacity-70"
-                      style={{ color: '#172e3c' }}
+                      style={{ color: "#172e3c" }}
                     >
                       Todos los Productos
                     </Link>
 
-                    <div className="border-t my-2" style={{ borderColor: '#d6e2e2' }} />
+                    <div
+                      className="border-t my-2"
+                      style={{ borderColor: "#d6e2e2" }}
+                    />
 
                     {productTypes.map((type) => (
                       <Link
@@ -113,7 +137,7 @@ export default function Header() {
                         href={`/showroom?type=${type.id}`}
                         onClick={() => setIsShopOpen(false)}
                         className="block py-2 text-sm font-light transition-colors hover:opacity-70"
-                        style={{ color: '#172e3c' }}
+                        style={{ color: "#172e3c" }}
                       >
                         {type.name}
                       </Link>
@@ -125,7 +149,7 @@ export default function Header() {
               <Link
                 href="/showroom"
                 className="text-sm tracking-[0.1em] uppercase font-light transition-opacity hover:opacity-70"
-                style={{ color: '#172e3c' }}
+                style={{ color: "#172e3c" }}
               >
                 Colección
               </Link>
@@ -138,7 +162,7 @@ export default function Header() {
               <Image
                 src="/logos/Altara.png"
                 alt="Altara"
-                width={160}
+                width={140}
                 height={50}
                 priority
                 className="object-contain"
@@ -147,16 +171,20 @@ export default function Header() {
           </div>
 
           {/* Right Section - Currency Toggle & Cart */}
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex items-center justify-end gap-2">
             {/* Currency Toggle Button */}
             <button
               onClick={toggleCurrency}
-              className="flex items-center gap-2 px-3 py-2 border hover:bg-gray-50 transition-colors text-xs tracking-wider font-medium"
+              className="flex items-center gap-2 px-2 py-2 border hover:bg-gray-50 transition-colors text-xs tracking-wider font-medium"
               style={{
-                borderColor: '#d6e2e2',
-                color: '#172e3c',
+                borderColor: "#d6e2e2",
+                color: "#172e3c",
               }}
-              title={currency === 'USD' ? 'Ver precios en Bolívares' : 'Ver precios en Dólares'}
+              title={
+                currency === "USD"
+                  ? "Ver precios en Bolívares"
+                  : "Ver precios en Dólares"
+              }
             >
               <span className="font-semibold">{currency}</span>
               <svg
@@ -165,7 +193,7 @@ export default function Header() {
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className="w-4 h-4"
+                className="w-4 h-4 hidden md:block"
               >
                 <path
                   strokeLinecap="round"
@@ -188,7 +216,7 @@ export default function Header() {
                 strokeWidth={1.5}
                 stroke="currentColor"
                 className="w-6 h-6"
-                style={{ color: '#172e3c' }}
+                style={{ color: "#172e3c" }}
               >
                 <path
                   strokeLinecap="round"
@@ -201,8 +229,8 @@ export default function Header() {
                 <span
                   className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-medium rounded-full"
                   style={{
-                    backgroundColor: '#dbb58e',
-                    color: '#fffff5',
+                    backgroundColor: "#dbb58e",
+                    color: "#fffff5",
                   }}
                 >
                   {totalItems}
@@ -214,21 +242,24 @@ export default function Header() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t py-4" style={{ borderColor: '#d6e2e2' }}>
+          <div
+            className="lg:hidden border-t py-4"
+            style={{ borderColor: "#d6e2e2" }}
+          >
             <nav className="space-y-4">
               <Link
                 href="/showroom"
                 onClick={() => setIsMenuOpen(false)}
                 className="block text-sm tracking-[0.1em] uppercase font-light py-2"
-                style={{ color: '#172e3c' }}
+                style={{ color: "#172e3c" }}
               >
                 Todos los Productos
               </Link>
 
-              <div className="border-t pt-4" style={{ borderColor: '#d6e2e2' }}>
+              <div className="border-t pt-4" style={{ borderColor: "#d6e2e2" }}>
                 <p
                   className="text-xs tracking-[0.2em] uppercase mb-3"
-                  style={{ color: '#dbb58e' }}
+                  style={{ color: "#dbb58e" }}
                 >
                   Categorías
                 </p>
@@ -238,7 +269,7 @@ export default function Header() {
                     href={`/showroom?type=${type.id}`}
                     onClick={() => setIsMenuOpen(false)}
                     className="block text-sm font-light py-2"
-                    style={{ color: '#172e3c' }}
+                    style={{ color: "#172e3c" }}
                   >
                     {type.name}
                   </Link>
