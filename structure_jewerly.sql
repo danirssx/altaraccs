@@ -89,6 +89,7 @@ CREATE TABLE public.orders (
   shipping_total numeric NOT NULL DEFAULT 0,
   tax_total numeric NOT NULL DEFAULT 0,
   total numeric NOT NULL DEFAULT 0,
+  orig_price numeric NOT NULL DEFAULT 0,
   ship_full_name text,
   ship_address_line1 text,
   ship_address_line2 text,

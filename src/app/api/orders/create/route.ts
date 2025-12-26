@@ -38,7 +38,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate stock availability for all items
+    // Validate stock availability for all items and fetch pricing
+    const productPrices: Record<number, { original_price: number; sale_price: number | null }> = {};
+
     for (const item of items) {
       const { data: inventory } = await supabase
         .from("inventory_current")
@@ -72,6 +74,20 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+
+      // Fetch product pricing for orig_price calculation
+      const { data: productPricing } = await supabase
+        .from("product_variants")
+        .select("original_price, sale_price")
+        .eq("id", item.productVariantId)
+        .single();
+
+      if (productPricing) {
+        productPrices[item.productVariantId] = {
+          original_price: productPricing.original_price,
+          sale_price: productPricing.sale_price,
+        };
+      }
     }
 
     // Get pending status
@@ -94,6 +110,15 @@ export async function POST(request: NextRequest) {
       0
     );
 
+    // Calculate orig_price: sum of (sale_price if not null, otherwise original_price) * quantity
+    const origPrice = items.reduce((sum: number, item: CreateOrderItem) => {
+      const pricing = productPrices[item.productVariantId];
+      if (!pricing) return sum;
+
+      const priceToUse = pricing.sale_price !== null ? pricing.sale_price : pricing.original_price;
+      return sum + priceToUse * item.quantity;
+    }, 0);
+
     // Generate order number
     const orderNumber = `ORD-${Date.now()}`;
 
@@ -111,6 +136,7 @@ export async function POST(request: NextRequest) {
         shipping_total: 0,
         tax_total: 0,
         total: total,
+        orig_price: origPrice,
         ship_full_name: deliveryOption === "delivery" ? customer.name : null,
         ship_address_line1: customer.address?.line1 || null,
         ship_address_line2: customer.address?.line2 || null,

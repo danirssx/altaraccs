@@ -237,6 +237,41 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Calculate statistics for filtered orders
+    let statsQuery = supabase
+      .from('orders')
+      .select('orig_price, total');
+
+    // Apply same filters as main query
+    if (status && status !== 'all') {
+      const { data: statusData } = await supabase
+        .from('order_statuses')
+        .select('id')
+        .eq('code', status)
+        .single();
+
+      if (statusData) {
+        statsQuery = statsQuery.eq('status_id', statusData.id);
+      }
+    }
+
+    if (search) {
+      statsQuery = statsQuery.or(`customer_name.ilike.%${search}%,customer_email.ilike.%${search}%,customer_phone.ilike.%${search}%,order_number.ilike.%${search}%`);
+    }
+
+    const { data: statsData } = await statsQuery;
+
+    // Calculate totals
+    const statistics = {
+      totalOrigPrice: statsData?.reduce((sum, order) => sum + (Number(order.orig_price) || 0), 0) || 0,
+      totalActualPrice: statsData?.reduce((sum, order) => sum + (Number(order.total) || 0), 0) || 0,
+    };
+
+    statistics.totalDiscount = statistics.totalOrigPrice - statistics.totalActualPrice;
+    statistics.discountPercentage = statistics.totalOrigPrice > 0
+      ? ((statistics.totalDiscount / statistics.totalOrigPrice) * 100)
+      : 0;
+
     return NextResponse.json({
       orders: orders || [],
       pagination: {
@@ -245,6 +280,7 @@ export async function GET(request: NextRequest) {
         total: count || 0,
         totalPages: Math.ceil((count || 0) / limit),
       },
+      statistics,
     });
 
   } catch (error) {

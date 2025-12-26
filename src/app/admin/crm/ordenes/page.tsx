@@ -11,6 +11,13 @@ interface PaginationData {
   totalPages: number;
 }
 
+interface Statistics {
+  totalOrigPrice: number;
+  totalActualPrice: number;
+  totalDiscount: number;
+  discountPercentage: number;
+}
+
 export default function OrdenesPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +29,12 @@ export default function OrdenesPage() {
     limit: 20,
     total: 0,
     totalPages: 1,
+  });
+  const [statistics, setStatistics] = useState<Statistics>({
+    totalOrigPrice: 0,
+    totalActualPrice: 0,
+    totalDiscount: 0,
+    discountPercentage: 0,
   });
 
   const loadOrders = useCallback(async () => {
@@ -39,6 +52,12 @@ export default function OrdenesPage() {
 
       setOrders(data.orders || []);
       setPagination(data.pagination);
+      setStatistics(data.statistics || {
+        totalOrigPrice: 0,
+        totalActualPrice: 0,
+        totalDiscount: 0,
+        discountPercentage: 0,
+      });
     } catch (error) {
       console.error("Error loading orders:", error);
     } finally {
@@ -309,6 +328,54 @@ export default function OrdenesPage() {
               </button>
             </div>
           )}
+
+          {/* Statistics */}
+          <div className="mt-8 bg-white rounded-lg border p-6" style={{ borderColor: "#d6e2e2" }}>
+            <h2 className="text-xl font-light mb-4" style={{ color: "#172e3c", fontFamily: "Playfair Display, serif" }}>
+              Estadísticas de Órdenes
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Original Price Total */}
+              <div className="p-4 rounded-lg" style={{ backgroundColor: "#f9fafb" }}>
+                <div className="text-xs uppercase tracking-wider mb-1" style={{ color: "#172e3c", opacity: 0.6 }}>
+                  Precio Original Total
+                </div>
+                <div className="text-2xl font-medium" style={{ color: "#172e3c" }}>
+                  {formatCurrency(statistics.totalOrigPrice)}
+                </div>
+              </div>
+
+              {/* Actual Price Total */}
+              <div className="p-4 rounded-lg" style={{ backgroundColor: "#f9fafb" }}>
+                <div className="text-xs uppercase tracking-wider mb-1" style={{ color: "#172e3c", opacity: 0.6 }}>
+                  Precio Real Total
+                </div>
+                <div className="text-2xl font-medium" style={{ color: "#172e3c" }}>
+                  {formatCurrency(statistics.totalActualPrice)}
+                </div>
+              </div>
+
+              {/* Total Discount */}
+              <div className="p-4 rounded-lg" style={{ backgroundColor: "#f0fdf4" }}>
+                <div className="text-xs uppercase tracking-wider mb-1" style={{ color: "#16a34a", opacity: 0.8 }}>
+                  Descuento Total
+                </div>
+                <div className="text-2xl font-medium" style={{ color: "#16a34a" }}>
+                  {formatCurrency(statistics.totalDiscount)}
+                </div>
+              </div>
+
+              {/* Discount Percentage */}
+              <div className="p-4 rounded-lg" style={{ backgroundColor: "#f0fdf4" }}>
+                <div className="text-xs uppercase tracking-wider mb-1" style={{ color: "#16a34a", opacity: 0.8 }}>
+                  % Descuento
+                </div>
+                <div className="text-2xl font-medium" style={{ color: "#16a34a" }}>
+                  {statistics.discountPercentage.toFixed(2)}%
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>

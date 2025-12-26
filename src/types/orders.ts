@@ -55,6 +55,7 @@ export interface Order {
   status_id: number;
   currency: string;
   subtotal: number;
+  orig_price: number;
   discount_total: number;
   shipping_total: number;
   tax_total: number;

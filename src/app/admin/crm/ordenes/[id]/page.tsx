@@ -294,6 +294,11 @@ export default function OrderDetailPage({
                 <span>Total:</span>
                 <span>{formatCurrency(order.total)}</span>
               </div>
+              <div className="text-right">
+                <div className="font-medium">
+                  Precio original: {formatCurrency(order.orig_price)}
+                </div>
+              </div>
             </div>
           </div>
 
