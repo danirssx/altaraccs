@@ -119,3 +119,39 @@ export async function uploadProductImage(
 
   return result.data;
 }
+
+export async function createProduct(productData: {
+  groupName: string;
+  groupDescription?: string;
+  brandId: number;
+  productTypeId: number;
+  size?: string;
+  color?: string;
+  code: number;
+  price: number;
+  originalPrice?: number;
+  salePrice?: number;
+  composition?: string;
+  initialQuantity: number;
+}): Promise<{
+  id: number;
+  groupId: number;
+  code: number;
+  name: string;
+}> {
+  const response = await fetch('/api/products/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(productData),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Error creating product');
+  }
+
+  return result.product;
+}

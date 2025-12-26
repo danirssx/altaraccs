@@ -3,6 +3,7 @@
 import { ProductVariant, Brand, ProductType } from "@/types/database";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   getProductVariants,
   getBrands,
@@ -126,6 +127,43 @@ export default function InventarioPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1
+            className="text-3xl font-light mb-2"
+            style={{
+              color: "#172e3c",
+              fontFamily: "Playfair Display, serif",
+            }}
+          >
+            Productos
+          </h1>
+          <p className="text-sm" style={{ color: "#172e3c", opacity: 0.7 }}>
+            Gestiona el catálogo de productos
+          </p>
+        </div>
+        <Link
+          href="/admin/crm/productos/crear"
+          className="px-6 py-2 rounded-lg text-white font-medium transition-opacity hover:opacity-80 inline-flex items-center gap-2"
+          style={{ backgroundColor: "#172e3c" }}
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          Crear Producto
+        </Link>
+      </div>
 
       {/* Search and Filter Controls */}
       <div className="mb-6 space-y-4">

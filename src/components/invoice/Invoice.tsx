@@ -42,9 +42,6 @@ export default function Invoice({ order }: InvoiceProps) {
               priority
             />
           </div>
-          <p className="text-sm" style={{ color: "#172e3c", opacity: 0.8 }}>
-            Joyería de Autor
-          </p>
         </div>
         <div className="text-right">
           <h1
