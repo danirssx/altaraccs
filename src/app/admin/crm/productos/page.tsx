@@ -340,8 +340,8 @@ export default function InventarioPage() {
 
 function ProductForm({
   product,
-  brands,
-  productTypes,
+  brands: _brands,
+  productTypes: _productTypes,
   onClose,
 }: {
   product: ProductVariant | null;

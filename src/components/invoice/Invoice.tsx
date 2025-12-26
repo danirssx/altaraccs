@@ -150,7 +150,7 @@ export default function Invoice({ order }: InvoiceProps) {
             </tr>
           </thead>
           <tbody>
-            {order.order_items?.map((item, index) => (
+            {order.order_items?.map((item) => (
               <tr
                 key={item.id}
                 className="border-b"

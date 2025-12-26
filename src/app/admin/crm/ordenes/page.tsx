@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Order } from "@/types/orders";
 
@@ -24,11 +24,7 @@ export default function OrdenesPage() {
     totalPages: 1,
   });
 
-  useEffect(() => {
-    loadOrders();
-  }, [statusFilter, searchQuery, currentPage]);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -48,7 +44,11 @@ export default function OrdenesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, searchQuery, currentPage]);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   const getStatusBadgeColor = (statusCode: string) => {
     switch (statusCode) {
@@ -109,8 +109,8 @@ export default function OrdenesPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1); // Reset to first page on new search
             }}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2"
-            style={{ borderColor: "#d6e2e2", focusRing: "#172e3c" }}
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#172e3c]"
+            style={{ borderColor: "#d6e2e2" }}
           />
         </div>
 

@@ -1,21 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSession, isAdmin, signOut } from '@/lib/supabase/auth';
+import { getSession, isAdmin } from '@/lib/supabase/auth';
 import { toast } from 'sonner';
-import Link from 'next/link';
 
 export default function InventarioLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  async function checkAuth() {
+  const checkAuth = useCallback(async () => {
     try {
       const session = await getSession();
 
@@ -37,23 +32,17 @@ export default function InventarioLayout({ children }: { children: React.ReactNo
 
       // Authenticated and authorized
       setAuthenticated(true);
-    } catch (error) {
-      console.error('Auth check error:', error);
+    } catch (_error) {
+      console.error('Auth check error:', _error);
       router.push('/admin/login');
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
 
-  async function handleSignOut() {
-    try {
-      await signOut();
-      toast.success('Signed out successfully');
-      router.push('/');
-    } catch (error) {
-      toast.error('Error signing out');
-    }
-  }
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   if (loading) {
     return (

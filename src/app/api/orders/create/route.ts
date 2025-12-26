@@ -8,6 +8,12 @@ const supabaseServiceKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+interface CreateOrderItem {
+  productVariantId: number;
+  quantity: number;
+  price: number;
+}
+
 /**
  * Create manual order (admin only)
  * Different from public /api/orders POST - allows custom pricing and admin-only access
@@ -53,9 +59,15 @@ export async function POST(request: NextRequest) {
           .eq("id", item.productVariantId)
           .single();
 
+        const productName = product?.product_groups
+          ? Array.isArray(product.product_groups)
+            ? product.product_groups[0]?.name
+            : (product.product_groups as { name?: string })?.name
+          : null;
+
         return NextResponse.json(
           {
-            error: `Insufficient stock for ${product?.product_groups?.name || `product ${item.productVariantId}`}. Available: ${inventory?.quantity || 0}, Required: ${item.quantity}`,
+            error: `Insufficient stock for ${productName || `product ${item.productVariantId}`}. Available: ${inventory?.quantity || 0}, Required: ${item.quantity}`,
           },
           { status: 400 }
         );
@@ -78,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate total
     const total = items.reduce(
-      (sum: number, item: any) => sum + item.price * item.quantity,
+      (sum: number, item: CreateOrderItem) => sum + item.price * item.quantity,
       0
     );
 
@@ -124,7 +136,7 @@ export async function POST(request: NextRequest) {
 
     // Create order items with product snapshots
     const orderItemsData = await Promise.all(
-      items.map(async (item: any) => {
+      items.map(async (item: CreateOrderItem) => {
         // Get product details for snapshot
         const { data: product } = await supabase
           .from("product_variants")
@@ -137,6 +149,12 @@ export async function POST(request: NextRequest) {
           .eq("id", item.productVariantId)
           .single();
 
+        const productName = product?.product_groups
+          ? Array.isArray(product.product_groups)
+            ? product.product_groups[0]?.name
+            : (product.product_groups as { name?: string })?.name
+          : null;
+
         return {
           order_id: order.id,
           product_variant_id: item.productVariantId,
@@ -144,7 +162,7 @@ export async function POST(request: NextRequest) {
           unit_price: item.price,
           unit_original_price: item.price,
           unit_sale_price: item.price,
-          title_snapshot: product?.product_groups?.name || "",
+          title_snapshot: productName || "",
           sku_snapshot: product?.code?.toString() || "",
           line_subtotal: item.price * item.quantity,
         };

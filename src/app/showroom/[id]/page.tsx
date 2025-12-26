@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductVariant } from "@/types/database";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { getProductVariant } from "@/lib/api/inventory";
 import Link from "next/link";
@@ -21,11 +21,7 @@ export default function ProductDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  useEffect(() => {
-    loadProduct();
-  }, [resolvedParams.id]);
-
-  const loadProduct = async () => {
+  const loadProduct = useCallback(async () => {
     try {
       setLoading(true);
       const productData = await getProductVariant(resolvedParams.id);
@@ -41,7 +37,11 @@ export default function ProductDetailPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [resolvedParams.id]);
+
+  useEffect(() => {
+    loadProduct();
+  }, [loadProduct]);
 
   if (loading) {
     return (

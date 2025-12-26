@@ -59,7 +59,7 @@ export default function Sidebar() {
       await signOut();
       toast.success("Sesión cerrada correctamente");
       router.push("/");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al cerrar sesión");
     }
   };

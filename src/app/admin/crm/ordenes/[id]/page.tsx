@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use, useRef } from "react";
+import { useState, useEffect, use, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useReactToPrint } from "react-to-print";
@@ -26,11 +26,7 @@ export default function OrderDetailPage({
     documentTitle: `Factura-${order?.order_number || "orden"}`,
   });
 
-  useEffect(() => {
-    loadOrder();
-  }, [id]);
-
-  const loadOrder = async () => {
+  const loadOrder = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/orders/${id}`);
@@ -49,7 +45,11 @@ export default function OrderDetailPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, router]);
+
+  useEffect(() => {
+    loadOrder();
+  }, [loadOrder]);
 
   const handleStatusUpdate = async () => {
     if (!order || selectedStatus === order.order_statuses?.code) {

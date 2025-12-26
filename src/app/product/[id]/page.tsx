@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ProductVariant } from "@/types/database";
 import Image from "next/image";
 import { getProductVariant } from "@/lib/api/inventory";
@@ -8,7 +8,6 @@ import Link from "next/link";
 import { use } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { toast } from "sonner";
-import { formatPrice } from "@/utils/formatters";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { formatCurrency } from "@/utils/currency";
 
@@ -27,11 +26,7 @@ export default function ProductDetailPage({
 
   const { addItem, openCart } = useCartStore();
 
-  useEffect(() => {
-    loadProduct();
-  }, [resolvedParams.id]);
-
-  const loadProduct = async () => {
+  const loadProduct = useCallback(async () => {
     try {
       setLoading(true);
       const productData = await getProductVariant(resolvedParams.id);
@@ -47,7 +42,11 @@ export default function ProductDetailPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [resolvedParams.id]);
+
+  useEffect(() => {
+    loadProduct();
+  }, [loadProduct]);
 
   const handleAddToCart = () => {
     if (!product) return;

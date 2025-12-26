@@ -4,7 +4,7 @@ import { ProductVariant, Brand, ProductType } from "@/types/database";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import {
   getProductVariant,
   getBrands,
@@ -26,11 +26,7 @@ export default function ProductPage({
   const [showEditForm, setShowEditForm] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, [productId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [productData, brandsData, typesData] = await Promise.all([
@@ -51,7 +47,11 @@ export default function ProductPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleEditClick = () => {
     setShowEditForm(true);
